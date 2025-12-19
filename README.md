@@ -9,25 +9,23 @@
 3. Запустите: `python main.py` и откройте Swagger по `http://localhost:8001/docs`.
 
 ### Переменные окружения
-| Переменная | Назначение                                                        |
-|------------|-------------------------------------------------------------------|
-| `HOST` | Хост (по умолчанию `0.0.0.0`)                               |
-| `PORT` | Порт (по умолчанию `8001`)                                  |
-| `OPENAI_MODEL` | Модель OpenAI для текста/vision (например, `gpt-4.1`)         |
-| `OPENAI_API_KEY` | API-ключ OpenAI                                                   |
-| `YANDEX_KEY_ID` | `key_id` сервисного аккаунта                                      |
-| `YANDEX_SERVICE_ACCOUNT_ID` | `service_account_id`                                              |
-| `YANDEX_PRIVATE_KEY` | приватный ключ в PEM                                              |
-| `YANDEX_GPT_MODEL_PATH` | Префикс модели, например `gpt://.../`                             |
+| Переменная | Назначение                                             |
+|------------|--------------------------------------------------------|
+| `HOST` | Хост (по умолчанию `0.0.0.0`)                          |
+| `PORT` | Порт (по умолчанию `8001`)                             |
+| `OPENAI_MODEL` | Модель OpenAI (например, `gpt-4.1`)                    |
+| `OPENAI_API_KEY` | API-ключ OpenAI                                        |
+| `YANDEX_KEY_ID` | ключ сервисного аккаунта                               |
+| `YANDEX_SERVICE_ACCOUNT_ID` | `service_account_id`                                   |
+| `YANDEX_PRIVATE_KEY` | приватный ключ                                         |
+| `YANDEX_GPT_MODEL_PATH` | Префикс модели:`gpt://.../`                            |
 | `YANDEX_GPT_API_URL` | `https://llm.api.cloud.yandex.net/foundationModels/v1` |
-| `YANDEX_GPT_MODEL_NAME` | Имя модели YandexGPT (например, `yandexgpt/latest`)                 |
-| `YANDEX_GPT_OSS_120B_MODEL_NAME` | `gpt-oss-120b/latest`                                           |
-| `YANDEX_GPT_OSS_20B_MODEL_NAME` | `gpt-oss-20b/latest`                                            |
-| `YANDEX_QWEN_235B_MODEL_NAME` | `qwen3-235b-a22b-fp8/latest`                                             |
-| `YANDEX_OPEN_AI_API_KEY` | Ключ для OpenAI-совместимого API Яндекс                           |
-| `YANDEX_OPEN_AI_BASE_URL` | `https://llm.api.cloud.yandex.net/v1`                             |
-| `LOG_LEVEL` | Уровень логов (`INFO` по умолчанию)                               | нет |
-| `LOG_FILE` | Файл логов (`llmbox.log` по умолчанию)                            |
+| `YANDEX_GPT_MODEL_NAME` | Имя модели YandexGPT (например, `yandexgpt/latest`)    |
+| `YANDEX_GPT_OSS_120B_MODEL_NAME` | `gpt-oss-120b/latest`                                  |
+| `YANDEX_GPT_OSS_20B_MODEL_NAME` | `gpt-oss-20b/latest`                                   |
+| `YANDEX_QWEN_235B_MODEL_NAME` | `qwen3-235b-a22b-fp8/latest`                           |
+| `YANDEX_OPEN_AI_API_KEY` | Ключ для OpenAI-совместимого API Яндекс                |
+| `YANDEX_OPEN_AI_BASE_URL` | `https://llm.api.cloud.yandex.net/v1`                  |
 
 Пример `.env`:
 ```
