@@ -1,10 +1,11 @@
 import asyncio
-import time
-import jwt
-import httpx
 import logging
+import time
 
-from config import config
+import httpx
+import jwt
+
+from app.core.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -17,15 +18,18 @@ class YandexAuth:
     def __init__(self):
         self._PRIVATE_KEY = self._normalize_private_key(self._PRIVATE_KEY)
         logger.info("Initializing Yandex Auth...")
-        
+
         if not all([self._KEY_ID, self._SERVICE_ACCOUNT_ID, self._PRIVATE_KEY]):
             missing = []
-            if not self._KEY_ID: missing.append("technokratos_yandex_key_id")
-            if not self._SERVICE_ACCOUNT_ID: missing.append("technokratos_yandex_service_account_id")
-            if not self._PRIVATE_KEY: missing.append("technokratos_yandex_private_key")
-            logger.error(f"Missing environment variables: {missing}")
+            if not self._KEY_ID:
+                missing.append("YANDEX_KEY_ID")
+            if not self._SERVICE_ACCOUNT_ID:
+                missing.append("YANDEX_SERVICE_ACCOUNT_ID")
+            if not self._PRIVATE_KEY:
+                missing.append("YANDEX_PRIVATE_KEY")
+            logger.error("Missing environment variables: %s", missing)
             raise ValueError(f"Missing required environment variables: {missing}")
-        
+
         self.jwt_token = None
         self.jwt_expires_at = 0
         self.iam_key = None
@@ -62,12 +66,12 @@ class YandexAuth:
                 if self._iam_token_task is None:
                     logger.info("Starting IAM token refresh task...")
                     self._iam_token_task = asyncio.create_task(self.update_iam_token())
-            
+
             logger.debug("IAM key provided")
             return self.iam_key
-            
-        except Exception as e:
-            logger.error(f"Error getting IAM key: {str(e)}", exc_info=True)
+
+        except Exception as exc:
+            logger.error("Error getting IAM key: %s", exc, exc_info=True)
             self.jwt_token = None
             self.jwt_expires_at = 0
             self.iam_key = None
@@ -80,25 +84,25 @@ class YandexAuth:
             now = int(time.time())
             expires_at = now + 3600
             payload = {
-                'aud': 'https://iam.api.cloud.yandex.net/iam/v1/tokens',
-                'iss': self._SERVICE_ACCOUNT_ID,
-                'iat': now,
-                'exp': expires_at
+                "aud": "https://iam.api.cloud.yandex.net/iam/v1/tokens",
+                "iss": self._SERVICE_ACCOUNT_ID,
+                "iat": now,
+                "exp": expires_at,
             }
             encoded_token = jwt.encode(
                 payload,
                 self._PRIVATE_KEY,
-                algorithm='PS256',
-                headers={'kid': self._KEY_ID}
+                algorithm="PS256",
+                headers={"kid": self._KEY_ID},
             )
 
             self.jwt_expires_at = expires_at
-            
-            logger.debug(f"JWT token created, expires at {expires_at}")
+
+            logger.debug("JWT token created, expires at %s", expires_at)
             return encoded_token
-            
-        except Exception as e:
-            logger.error(f"Error creating JWT token: {str(e)}", exc_info=True)
+
+        except Exception as exc:
+            logger.error("Error creating JWT token: %s", exc, exc_info=True)
             raise
 
     async def create_iam_token(self, jwt_token: str) -> str:
@@ -106,7 +110,7 @@ class YandexAuth:
             iam_token_url = "https://iam.api.cloud.yandex.net/iam/v1/tokens"
 
             headers = {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json"
             }
 
             data = {
@@ -119,13 +123,12 @@ class YandexAuth:
             if response.status_code == 200:
                 result = response.json()["iamToken"]
                 return result
-            else:
-                error_text = response.text
-                logger.error(f"IAM token creation failed: status={response.status_code}, response={error_text}")
-                raise Exception(f"Ошибка при получении IAM-токена: {response.status_code} - {error_text}")
-                
-        except Exception as e:
-            logger.error(f"Error creating IAM token: {str(e)}", exc_info=True)
+            error_text = response.text
+            logger.error("IAM token creation failed: status=%s, response=%s", response.status_code, error_text)
+            raise Exception(f"Ошибка при получении IAM-токена: {response.status_code} - {error_text}")
+
+        except Exception as exc:
+            logger.error("Error creating IAM token: %s", exc, exc_info=True)
             raise
 
     async def update_iam_token(self):
@@ -137,14 +140,16 @@ class YandexAuth:
                     self.iam_key = await self.create_iam_token(self.jwt_token)
                     self.iam_expires_at = time.time() + 3600
                     logger.info("Tokens refreshed successfully")
-                except Exception as e:
-                    logger.error(f"Error refreshing tokens: {str(e)}", exc_info=True)
+                except Exception as exc:
+                    logger.error("Error refreshing tokens: %s", exc, exc_info=True)
                     self.jwt_token = None
                     self.jwt_expires_at = 0
                     self.iam_key = None
                     self.iam_expires_at = 0
                 await asyncio.sleep(3000)
-                
-        except Exception as e:
-            logger.error(f"Token refresh task crashed: {str(e)}", exc_info=True)
+
+        except Exception as exc:
+            logger.error("Token refresh task crashed: %s", exc, exc_info=True)
             self._iam_token_task = None
+
+
