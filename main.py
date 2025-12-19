@@ -7,7 +7,7 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.core.config import config
+from core.config import config
 from app.infrastructure.api import routes as ai_routes
 
 root_logger = logging.getLogger()

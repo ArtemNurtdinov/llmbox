@@ -4,7 +4,7 @@ from typing import List
 import httpx
 
 from app.domain.interfaces import TextModelClient
-from app.core.config import config
+from core.config import config
 from app.domain.models import AIResponse, Message, Usage
 from app.infrastructure.clients.yandex_auth import YandexAuth
 

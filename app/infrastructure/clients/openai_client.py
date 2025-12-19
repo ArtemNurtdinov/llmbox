@@ -9,7 +9,7 @@ from openai.types.chat import (
 )
 
 from app.domain.interfaces import TextModelClient, VisionModelClient
-from app.core.config import config
+from core.config import config
 from app.domain.models import (
     AIMessage,
     AIResponse,

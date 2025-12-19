@@ -9,7 +9,7 @@ from openai.types.chat import (
 )
 
 from app.domain.interfaces import TextModelClient
-from app.core.config import config
+from core.config import config
 from app.domain.models import AIResponse, Message, Role, Usage
 from app.infrastructure.clients.yandex_gpt_client import YandexGPTClient
 

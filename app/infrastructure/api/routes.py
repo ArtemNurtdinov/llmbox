@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.application.services import AIService
-from app.core.config import config
+from core.config import config
 from app.domain.interfaces import TextModelClient, VisionModelClient
 from app.domain.models import AIAssistant
 from app.infrastructure.api.schemas import AIResponseSchema, GenerateAIRequestSchema, GenerateVisionAIRequestSchema
