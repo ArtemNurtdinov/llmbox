@@ -25,4 +25,3 @@ def create_ai_service() -> AIService:
     vision_client: VisionModelClient = openai_client
 
     return AIService(text_clients=text_clients, vision_client=vision_client)
-
