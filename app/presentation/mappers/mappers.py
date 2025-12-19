@@ -1,5 +1,5 @@
 from app.domain.models import AIMessage, AIResponse, ImageContentItem, Message, TextContentItem, ContentType
-from app.infrastructure.api.schemas import AIMessageSchema, AIResponseSchema, MessageSchema, UsageSchema
+from app.presentation.api.schemas import AIMessageSchema, AIResponseSchema, MessageSchema, UsageSchema
 
 def _to_domain_message(message: MessageSchema) -> Message:
     return Message(role=message.role, content=message.content)
@@ -26,5 +26,4 @@ def to_response_schema(response: AIResponse) -> AIResponseSchema:
         )
 
     return AIResponseSchema(assistant_message=response.assistant_message, usage=usage_schema)
-
 

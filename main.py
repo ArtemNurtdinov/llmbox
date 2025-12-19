@@ -8,7 +8,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from core.config import config
-from app.infrastructure.api import routes as ai_routes
+from app.presentation.api import routes as ai_routes
 
 root_logger = logging.getLogger()
 root_logger.setLevel(config.logging.level)

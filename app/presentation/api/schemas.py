@@ -44,4 +44,3 @@ class GenerateAIRequestSchema(BaseModel):
 class GenerateVisionAIRequestSchema(BaseModel):
     messages: List[AIMessageSchema]
 
-

@@ -6,11 +6,11 @@ from app.application.services import AIService
 from core.config import config
 from app.domain.interfaces import TextModelClient, VisionModelClient
 from app.domain.models import AIAssistant
-from app.infrastructure.api.schemas import AIResponseSchema, GenerateAIRequestSchema, GenerateVisionAIRequestSchema
+from app.presentation.api.schemas import AIResponseSchema, GenerateAIRequestSchema, GenerateVisionAIRequestSchema
 from app.infrastructure.clients.openai_client import OpenAIClient
 from app.infrastructure.clients.yandex_gpt_client import YandexGPTClient
 from app.infrastructure.clients.yandex_gpt_oss_client import YandexGPTOssClient
-from app.infrastructure.mappers.mappers import to_response_schema, _to_domain_ai_message, _to_domain_message
+from app.presentation.mappers.mappers import to_response_schema, _to_domain_ai_message, _to_domain_message
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -76,3 +76,4 @@ async def generate_vision_ai_response(
     except Exception as exc:
         logger.error("VISION AI REQUEST CRITICAL ERROR: error=%s", exc, exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to generate Vision AI response")
+
