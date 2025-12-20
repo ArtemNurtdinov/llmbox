@@ -20,7 +20,7 @@ class YandexAuth:
                 missing.append("private_key")
             logger.error("Missing required parameters: %s", missing)
             raise ValueError(f"Missing required parameters: {missing}")
-        
+
         self._KEY_ID = key_id
         self._SERVICE_ACCOUNT_ID = service_account_id
         self._PRIVATE_KEY = self._normalize_private_key(private_key)
@@ -147,6 +147,3 @@ class YandexAuth:
         except Exception as exc:
             logger.error("Token refresh task crashed: %s", exc, exc_info=True)
             self._iam_token_task = None
-
-
-

@@ -15,4 +15,3 @@ def to_ai_response_dto(response: AIResponse) -> AIResponseDTO:
         assistant_message=response.assistant_message,
         usage=to_usage_dto(response.usage),
     )
-

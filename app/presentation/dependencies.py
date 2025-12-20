@@ -2,6 +2,8 @@ from functools import lru_cache
 
 from core.config import Config, load_config
 from app.application.services import AIService
+from app.application.use_cases.generate_text_ai_use_case import GenerateTextAIUseCase
+from app.application.use_cases.generate_vision_ai_use_case import GenerateVisionAIUseCase
 from app.domain.interfaces import TextModelClient, VisionModelClient
 from app.domain.models import AIAssistant
 from app.infrastructure.clients.openai_client import OpenAIClient
@@ -11,7 +13,6 @@ from app.infrastructure.clients.yandex_auth import YandexAuth
 
 
 def create_ai_service(config: Config) -> AIService:
-    # OpenAI Client
     if not config.open_ai.model or not config.open_ai.api_key:
         raise ValueError("OpenAI model and api_key must be configured")
     openai_client = OpenAIClient(
@@ -19,7 +20,6 @@ def create_ai_service(config: Config) -> AIService:
         api_key=config.open_ai.api_key
     )
 
-    # Yandex Auth
     if not config.yandex.key_id or not config.yandex.service_account_id or not config.yandex.private_key:
         raise ValueError("Yandex authentication credentials must be configured")
     yandex_auth = YandexAuth(
@@ -28,7 +28,6 @@ def create_ai_service(config: Config) -> AIService:
         private_key=config.yandex.private_key
     )
 
-    # Yandex GPT Client
     if not config.yandex.yandex_gpt_api_url or not config.yandex.yandex_gpt_model_path or not config.yandex.yandex_gpt_model_name:
         raise ValueError("Yandex GPT configuration must be complete")
     yandex_gpt_client = YandexGPTClient(
@@ -38,7 +37,6 @@ def create_ai_service(config: Config) -> AIService:
         auth=yandex_auth
     )
 
-    # Yandex GPT OSS Clients
     if not config.yandex.yandex_gpt_model_path or not config.yandex.open_ai_api_key or not config.yandex.open_ai_base_url:
         raise ValueError("Yandex GPT OSS configuration must be complete")
 
@@ -79,7 +77,15 @@ def create_ai_service(config: Config) -> AIService:
 
     vision_client: VisionModelClient = openai_client
 
-    return AIService(text_clients=text_clients, vision_client=vision_client)
+    # Создаем Use Cases
+    generate_text_use_case = GenerateTextAIUseCase(text_clients=text_clients)
+    generate_vision_use_case = GenerateVisionAIUseCase(vision_client=vision_client)
+
+    # Создаем сервис как фасад над Use Cases
+    return AIService(
+        generate_text_use_case=generate_text_use_case,
+        generate_vision_use_case=generate_vision_use_case,
+    )
 
 
 @lru_cache()

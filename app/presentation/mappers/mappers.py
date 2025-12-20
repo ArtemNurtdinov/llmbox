@@ -19,16 +19,19 @@ from app.application.dto import (
 )
 
 
+from app.domain.models import Role, ContentType, AIAssistant
+
+
 def to_message_dto(schema: MessageSchema) -> MessageDTO:
-    return MessageDTO(role=schema.role.value, content=schema.content)
+    return MessageDTO(role=Role(schema.role.value), content=schema.content)
 
 
 def to_text_content_item_dto(schema: TextContentItemSchema) -> TextContentItemDTO:
-    return TextContentItemDTO(text=schema.text, type=schema.type.value)
+    return TextContentItemDTO(text=schema.text, type=ContentType(schema.type.value))
 
 
 def to_image_content_item_dto(schema: ImageContentItemSchema) -> ImageContentItemDTO:
-    return ImageContentItemDTO(image_base64=schema.image_base64, type=schema.type.value)
+    return ImageContentItemDTO(image_base64=schema.image_base64, type=ContentType(schema.type.value))
 
 
 def to_ai_message_dto(schema: AIMessageSchema) -> AIMessageDTO:
@@ -39,12 +42,12 @@ def to_ai_message_dto(schema: AIMessageSchema) -> AIMessageDTO:
         elif isinstance(item, ImageContentItemSchema):
             content_items.append(to_image_content_item_dto(item))
     
-    return AIMessageDTO(role=schema.role.value, content=content_items)
+    return AIMessageDTO(role=Role(schema.role.value), content=content_items)
 
 
 def to_generate_ai_request_dto(schema: GenerateAIRequestSchema) -> GenerateAIRequestDTO:
     messages = [to_message_dto(msg) for msg in schema.messages]
-    return GenerateAIRequestDTO(messages=messages, assistant=schema.assistant.value)
+    return GenerateAIRequestDTO(messages=messages, assistant=AIAssistant(schema.assistant.value))
 
 
 def to_generate_vision_ai_request_dto(schema: GenerateVisionAIRequestSchema) -> GenerateVisionAIRequestDTO:

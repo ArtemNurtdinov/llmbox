@@ -1,35 +1,37 @@
 from dataclasses import dataclass
 from typing import List, Union
 
+from app.domain.models import Role, ContentType, AIAssistant
+
 
 @dataclass
 class MessageDTO:
-    role: str
+    role: Role
     content: str
 
 
 @dataclass
 class TextContentItemDTO:
     text: str
-    type: str = "text"
+    type: ContentType = ContentType.TEXT
 
 
 @dataclass
 class ImageContentItemDTO:
     image_base64: str
-    type: str = "image_url"
+    type: ContentType = ContentType.IMAGE_URL
 
 
 @dataclass
 class AIMessageDTO:
-    role: str
+    role: Role
     content: List[Union[TextContentItemDTO, ImageContentItemDTO]]
 
 
 @dataclass
 class GenerateAIRequestDTO:
     messages: List[MessageDTO]
-    assistant: str
+    assistant: AIAssistant
 
 
 @dataclass
