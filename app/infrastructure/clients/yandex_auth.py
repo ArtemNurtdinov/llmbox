@@ -5,30 +5,26 @@ import time
 import httpx
 import jwt
 
-from core.config import config
-
 logger = logging.getLogger(__name__)
 
 
 class YandexAuth:
-    _KEY_ID = config.yandex.key_id
-    _SERVICE_ACCOUNT_ID = config.yandex.service_account_id
-    _PRIVATE_KEY = config.yandex.private_key
-
-    def __init__(self):
-        self._PRIVATE_KEY = self._normalize_private_key(self._PRIVATE_KEY)
-        logger.info("Initializing Yandex Auth...")
-
-        if not all([self._KEY_ID, self._SERVICE_ACCOUNT_ID, self._PRIVATE_KEY]):
+    def __init__(self, key_id: str, service_account_id: str, private_key: str):
+        if not key_id or not service_account_id or not private_key:
             missing = []
-            if not self._KEY_ID:
-                missing.append("YANDEX_KEY_ID")
-            if not self._SERVICE_ACCOUNT_ID:
-                missing.append("YANDEX_SERVICE_ACCOUNT_ID")
-            if not self._PRIVATE_KEY:
-                missing.append("YANDEX_PRIVATE_KEY")
-            logger.error("Missing environment variables: %s", missing)
-            raise ValueError(f"Missing required environment variables: {missing}")
+            if not key_id:
+                missing.append("key_id")
+            if not service_account_id:
+                missing.append("service_account_id")
+            if not private_key:
+                missing.append("private_key")
+            logger.error("Missing required parameters: %s", missing)
+            raise ValueError(f"Missing required parameters: {missing}")
+        
+        self._KEY_ID = key_id
+        self._SERVICE_ACCOUNT_ID = service_account_id
+        self._PRIVATE_KEY = self._normalize_private_key(private_key)
+        logger.info("Initializing Yandex Auth...")
 
         self.jwt_token = None
         self.jwt_expires_at = 0
@@ -151,5 +147,6 @@ class YandexAuth:
         except Exception as exc:
             logger.error("Token refresh task crashed: %s", exc, exc_info=True)
             self._iam_token_task = None
+
 
 

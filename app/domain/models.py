@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum, unique
-from typing import List, Union, Optional
+from typing import List, Union
 
 
-class AIAssistant(str, Enum):
+class AIAssistant(Enum):
     CHAT_GPT = "chat_gpt"
     YANDEX_GPT = "yandex_gpt"
     GPT_OSS_120B = "gpt_oss_120b"
@@ -61,4 +61,4 @@ class Usage:
 @dataclass
 class AIResponse:
     assistant_message: str
-    usage: Optional[Usage] = None
+    usage: Usage

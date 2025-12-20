@@ -1,29 +1,62 @@
-from app.domain.models import AIMessage, AIResponse, ImageContentItem, Message, TextContentItem, ContentType
-from app.presentation.api.schemas import AIMessageSchema, AIResponseSchema, MessageSchema, UsageSchema
+from app.presentation.api.schemas import (
+    AIMessageSchema,
+    AIResponseSchema,
+    MessageSchema,
+    UsageSchema,
+    TextContentItemSchema,
+    ImageContentItemSchema,
+    GenerateAIRequestSchema,
+    GenerateVisionAIRequestSchema,
+)
+from app.application.dto import (
+    GenerateAIRequestDTO,
+    GenerateVisionAIRequestDTO,
+    AIResponseDTO,
+    MessageDTO,
+    AIMessageDTO,
+    TextContentItemDTO,
+    ImageContentItemDTO,
+)
 
-def _to_domain_message(message: MessageSchema) -> Message:
-    return Message(role=message.role, content=message.content)
+
+def to_message_dto(schema: MessageSchema) -> MessageDTO:
+    return MessageDTO(role=schema.role.value, content=schema.content)
 
 
-def _to_domain_ai_message(message: AIMessageSchema) -> AIMessage:
+def to_text_content_item_dto(schema: TextContentItemSchema) -> TextContentItemDTO:
+    return TextContentItemDTO(text=schema.text, type=schema.type.value)
+
+
+def to_image_content_item_dto(schema: ImageContentItemSchema) -> ImageContentItemDTO:
+    return ImageContentItemDTO(image_base64=schema.image_base64, type=schema.type.value)
+
+
+def to_ai_message_dto(schema: AIMessageSchema) -> AIMessageDTO:
     content_items = []
-    for item in message.content:
-        if item.type == ContentType.TEXT:
-            content_items.append(TextContentItem(text=item.text))
-        else:
-            content_items.append(ImageContentItem(image_base64=item.image_base64))
+    for item in schema.content:
+        if isinstance(item, TextContentItemSchema):
+            content_items.append(to_text_content_item_dto(item))
+        elif isinstance(item, ImageContentItemSchema):
+            content_items.append(to_image_content_item_dto(item))
+    
+    return AIMessageDTO(role=schema.role.value, content=content_items)
 
-    return AIMessage(role=message.role, content=content_items)
+
+def to_generate_ai_request_dto(schema: GenerateAIRequestSchema) -> GenerateAIRequestDTO:
+    messages = [to_message_dto(msg) for msg in schema.messages]
+    return GenerateAIRequestDTO(messages=messages, assistant=schema.assistant.value)
 
 
-def to_response_schema(response: AIResponse) -> AIResponseSchema:
-    usage_schema = None
-    if response.usage:
-        usage_schema = UsageSchema(
-            prompt_tokens=response.usage.prompt_tokens,
-            completion_tokens=response.usage.completion_tokens,
-            total_tokens=response.usage.total_tokens,
-        )
+def to_generate_vision_ai_request_dto(schema: GenerateVisionAIRequestSchema) -> GenerateVisionAIRequestDTO:
+    messages = [to_ai_message_dto(msg) for msg in schema.messages]
+    return GenerateVisionAIRequestDTO(messages=messages)
 
-    return AIResponseSchema(assistant_message=response.assistant_message, usage=usage_schema)
 
+def to_response_schema(dto: AIResponseDTO) -> AIResponseSchema:
+    usage_schema = UsageSchema(
+        prompt_tokens=dto.usage.prompt_tokens,
+        completion_tokens=dto.usage.completion_tokens,
+        total_tokens=dto.usage.total_tokens,
+    )
+
+    return AIResponseSchema(assistant_message=dto.assistant_message, usage=usage_schema)

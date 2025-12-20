@@ -9,7 +9,6 @@ from openai.types.chat import (
 )
 
 from app.domain.interfaces import TextModelClient, VisionModelClient
-from core.config import config
 from app.domain.models import (
     AIMessage,
     AIResponse,
@@ -24,11 +23,11 @@ logger = logging.getLogger(__name__)
 
 
 class OpenAIClient(TextModelClient, VisionModelClient):
-    _OPEN_AI_MODEL = config.open_ai.model
-    _OPEN_AI_TOKEN = config.open_ai.api_key
-
-    def __init__(self):
-        self._client = AsyncOpenAI(api_key=self._OPEN_AI_TOKEN)
+    def __init__(self, model: str, api_key: str):
+        if not model or not api_key:
+            raise ValueError("OpenAI model and api_key are required")
+        self._model = model
+        self._client = AsyncOpenAI(api_key=api_key)
 
     async def generate(self, user_messages: List[Message]) -> AIResponse:
         return await self._generate_text(user_messages)
@@ -55,7 +54,7 @@ class OpenAIClient(TextModelClient, VisionModelClient):
                 elif message.role == Role.ASSISTANT:
                     messages.append(ChatCompletionAssistantMessageParam(role=message.role.value, content=message.content))
 
-            completion = await self._client.chat.completions.create(model=self._OPEN_AI_MODEL, messages=messages)
+            completion = await self._client.chat.completions.create(model=self._model, messages=messages)
 
             assistant_message = completion.choices[0].message.content
             prompt_tokens = completion.usage.prompt_tokens
@@ -70,28 +69,21 @@ class OpenAIClient(TextModelClient, VisionModelClient):
 
     async def generate_vision(self, user_messages: List[AIMessage]) -> AIResponse:
         try:
-            logger.info("OpenAI Vision API request starting: messages_count=%s", len(user_messages))
+            logger.info("OpenAI Vision API request starting")
 
             messages = [self._serialize_message(msg) for msg in user_messages]
 
-            logger.info("Sending Vision API request to OpenAI with %s messages using model %s", len(messages), self._OPEN_AI_MODEL)
-            response = await self._client.chat.completions.create(model=self._OPEN_AI_MODEL, messages=messages)
+            response = await self._client.chat.completions.create(model=self._model, messages=messages)
 
-            usage = None
-            if hasattr(response, "usage") and response.usage:
-                usage = Usage(
-                    prompt_tokens=response.usage.prompt_tokens,
-                    completion_tokens=response.usage.completion_tokens,
-                    total_tokens=response.usage.total_tokens,
-                )
+            usage = Usage(
+                prompt_tokens=response.usage.prompt_tokens,
+                completion_tokens=response.usage.completion_tokens,
+                total_tokens=response.usage.total_tokens,
+            )
 
             content = response.choices[0].message.content
 
-            logger.info(
-                "OpenAI Vision API response received: response_length=%s, tokens_used=%s",
-                len(content) if content else 0,
-                usage.total_tokens if usage else 0,
-            )
+            logger.info("OpenAI Vision API response received")
 
             return AIResponse(assistant_message=content, usage=usage)
 

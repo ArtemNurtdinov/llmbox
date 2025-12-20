@@ -4,7 +4,6 @@ from typing import List
 import httpx
 
 from app.domain.interfaces import TextModelClient
-from core.config import config
 from app.domain.models import AIResponse, Message, Usage
 from app.infrastructure.clients.yandex_auth import YandexAuth
 
@@ -12,15 +11,22 @@ logger = logging.getLogger(__name__)
 
 
 class YandexGPTClient(TextModelClient):
-    _YANDEX_GPT_API_URL = config.yandex.yandex_gpt_api_url
-    MODEL_PATH = config.yandex.yandex_gpt_model_path
-
-    def __init__(self, model_name: str | None = None, auth: YandexAuth | None = None):
-        self.model_name = model_name or config.yandex.yandex_gpt_model_name
-        self.auth = auth or YandexAuth()
+    def __init__(
+        self,
+        api_url: str,
+        model_path: str,
+        model_name: str,
+        auth: YandexAuth,
+    ):
+        if not api_url or not model_path or not model_name:
+            raise ValueError("Yandex GPT api_url, model_path and model_name are required")
+        self._api_url = api_url
+        self._model_path = model_path
+        self.model_name = model_name
+        self.auth = auth
 
     async def generate(self, user_messages: List[Message]) -> AIResponse:
-        model_uri = f"{self.MODEL_PATH}{self.model_name}"
+        model_uri = f"{self._model_path}{self.model_name}"
         data = {
             "modelUri": model_uri,
             "completionOptions": {
@@ -42,7 +48,7 @@ class YandexGPTClient(TextModelClient):
 
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.post(f"{self._YANDEX_GPT_API_URL}/completion", json=data, headers=headers)
+                response = await client.post(f"{self._api_url}/completion", json=data, headers=headers)
 
             if response.status_code != 200:
                 error_text = response.text
