@@ -2,22 +2,10 @@ import logging
 from typing import List
 
 from openai import AsyncOpenAI
-from openai.types.chat import (
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionSystemMessageParam,
-    ChatCompletionUserMessageParam,
-)
+from openai.types.chat import ChatCompletionAssistantMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
 
 from app.domain.interfaces import TextModelClient, VisionModelClient
-from app.domain.models import (
-    AIMessage,
-    AIResponse,
-    ImageContentItem,
-    Message,
-    Role,
-    TextContentItem,
-    Usage,
-)
+from app.domain.models import AIMessage, AIResponse, ImageContentItem, Message, Role, TextContentItem, Usage
 
 logger = logging.getLogger(__name__)
 
@@ -52,52 +40,39 @@ class OpenAIClient(TextModelClient, VisionModelClient):
         }
 
     async def _generate_text(self, user_messages: List[Message]) -> AIResponse:
-        try:
-            messages = []
+        messages = []
 
-            for message in user_messages:
-                if message.role == Role.SYSTEM:
-                    messages.append(ChatCompletionSystemMessageParam(role=message.role.value, content=message.content))
-                elif message.role == Role.USER:
-                    messages.append(ChatCompletionUserMessageParam(role=message.role.value, content=message.content))
-                elif message.role == Role.ASSISTANT:
-                    messages.append(ChatCompletionAssistantMessageParam(role=message.role.value, content=message.content))
+        for message in user_messages:
+            if message.role == Role.SYSTEM:
+                messages.append(ChatCompletionSystemMessageParam(role=message.role.value, content=message.content))
+            elif message.role == Role.USER:
+                messages.append(ChatCompletionUserMessageParam(role=message.role.value, content=message.content))
+            elif message.role == Role.ASSISTANT:
+                messages.append(ChatCompletionAssistantMessageParam(role=message.role.value, content=message.content))
 
-            completion = await self._client.chat.completions.create(model=self._model, messages=messages)
+        completion = await self._client.chat.completions.create(model=self._model, messages=messages)
 
-            assistant_message = completion.choices[0].message.content
-            prompt_tokens = completion.usage.prompt_tokens
-            completion_tokens = completion.usage.completion_tokens
-            total_tokens = completion.usage.total_tokens
+        assistant_message = completion.choices[0].message.content
+        prompt_tokens = completion.usage.prompt_tokens
+        completion_tokens = completion.usage.completion_tokens
+        total_tokens = completion.usage.total_tokens
 
-            usage_model = Usage(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens, total_tokens=total_tokens)
-            return AIResponse(assistant_message=assistant_message, usage=usage_model)
-        except Exception as exc:
-            logger.error("OpenAI API error: %s", exc, exc_info=True)
-            raise
+        usage_model = Usage(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens, total_tokens=total_tokens)
+        return AIResponse(assistant_message=assistant_message, usage=usage_model)
 
     async def generate_vision(self, user_messages: List[AIMessage]) -> AIResponse:
-        try:
-            logger.info("OpenAI Vision API request starting")
+        messages = [self._serialize_message(msg) for msg in user_messages]
 
-            messages = [self._serialize_message(msg) for msg in user_messages]
+        response = await self._client.chat.completions.create(model=self._model, messages=messages)
 
-            response = await self._client.chat.completions.create(model=self._model, messages=messages)
+        usage = Usage(
+            prompt_tokens=response.usage.prompt_tokens,
+            completion_tokens=response.usage.completion_tokens,
+            total_tokens=response.usage.total_tokens,
+        )
 
-            usage = Usage(
-                prompt_tokens=response.usage.prompt_tokens,
-                completion_tokens=response.usage.completion_tokens,
-                total_tokens=response.usage.total_tokens,
-            )
+        content = response.choices[0].message.content
 
-            content = response.choices[0].message.content
+        logger.info("OpenAI Vision API response received")
 
-            logger.info("OpenAI Vision API response received")
-
-            return AIResponse(assistant_message=content, usage=usage)
-
-        except Exception as exc:
-            logger.error("OpenAI Vision API error: %s", exc, exc_info=True)
-            raise
-
-
+        return AIResponse(assistant_message=content, usage=usage)

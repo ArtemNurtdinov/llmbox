@@ -46,30 +46,23 @@ class YandexGPTClient(TextModelClient):
             "Content-Type": "application/json",
         }
 
-        try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.post(f"{self._api_url}/completion", json=data, headers=headers)
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.post(f"{self._api_url}/completion", json=data, headers=headers)
 
-            if response.status_code != 200:
-                error_text = response.text
-                logger.error("Yandex GPT API error: status=%s, response=%s", response.status_code, error_text)
-                raise Exception(f"Yandex GPT API error: {response.status_code} - {error_text}")
+        if response.status_code != 200:
+            error_text = response.text
+            logger.error("Yandex GPT API error: status=%s, response=%s", response.status_code, error_text)
+            raise Exception(f"Yandex GPT API error: {response.status_code} - {error_text}")
 
-            response_json = response.json()
-            logger.debug("Yandex GPT response JSON: %s", response_json)
+        response_json = response.json()
+        logger.debug("Yandex GPT response JSON: %s", response_json)
 
-            assistant_message = response_json["result"]["alternatives"][0]["message"]["text"]
-            usage_raw = response_json["result"]["usage"]
+        assistant_message = response_json["result"]["alternatives"][0]["message"]["text"]
+        usage_raw = response_json["result"]["usage"]
 
-            usage = Usage(
-                prompt_tokens=int(usage_raw["inputTextTokens"]),
-                completion_tokens=int(usage_raw["completionTokens"]),
-                total_tokens=int(usage_raw["totalTokens"]),
-            )
-            return AIResponse(assistant_message=assistant_message, usage=usage)
-
-        except Exception as exc:
-            logger.error("Yandex GPT error: model=%s, error=%s", self.model_name, exc, exc_info=True)
-            raise
-
-
+        usage = Usage(
+            prompt_tokens=int(usage_raw["inputTextTokens"]),
+            completion_tokens=int(usage_raw["completionTokens"]),
+            total_tokens=int(usage_raw["totalTokens"]),
+        )
+        return AIResponse(assistant_message=assistant_message, usage=usage)

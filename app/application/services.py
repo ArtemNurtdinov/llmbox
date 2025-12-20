@@ -5,11 +5,7 @@ from app.application.use_cases.generate_vision_ai_use_case import GenerateVision
 
 class AIService:
 
-    def __init__(
-        self,
-        generate_text_use_case: GenerateTextAIUseCase,
-        generate_vision_use_case: GenerateVisionAIUseCase,
-    ):
+    def __init__(self, generate_text_use_case: GenerateTextAIUseCase, generate_vision_use_case: GenerateVisionAIUseCase):
         self._generate_text_use_case = generate_text_use_case
         self._generate_vision_use_case = generate_vision_use_case
 

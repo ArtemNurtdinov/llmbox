@@ -33,30 +33,16 @@ class YandexGPTOssClient(TextModelClient):
             elif message.role == Role.ASSISTANT:
                 messages.append(ChatCompletionAssistantMessageParam(role=message.role.value, content=message.content))
 
-        try:
-            logger.info("Sending request to OpenAI-compatible API with %s messages", len(messages))
-            completion = await self.open_ai.chat.completions.create(
-                model=f"{self._model_path}{self.model_name}",
-                messages=messages,
-                temperature=0.2,
-                max_tokens=2000,
-            )
-        except Exception as exc:
-            logger.error("OpenAI-compatible API error: %s", exc, exc_info=True)
-            raise
+        logger.info("Sending request to OpenAI-compatible API")
+        model = f"{self._model_path}{self.model_name}"
+        completion = await self.open_ai.chat.completions.create(model=model, messages=messages, temperature=0.2, max_tokens=2000,)
 
         assistant_message = completion.choices[0].message.content
         prompt_tokens = completion.usage.prompt_tokens
         completion_tokens = completion.usage.completion_tokens
         total_tokens = completion.usage.total_tokens
 
-        logger.info(
-            "OpenAI-compatible response received: response_length=%s, prompt_tokens=%s, completion_tokens=%s, total_tokens=%s",
-            len(assistant_message) if assistant_message else 0,
-            prompt_tokens,
-            completion_tokens,
-            total_tokens,
-        )
+        logger.info("OpenAI-compatible response received")
 
         usage_model = Usage(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens, total_tokens=total_tokens)
         return AIResponse(assistant_message=assistant_message, usage=usage_model)

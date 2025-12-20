@@ -24,8 +24,6 @@ class YandexAuth:
         self._KEY_ID = key_id
         self._SERVICE_ACCOUNT_ID = service_account_id
         self._PRIVATE_KEY = self._normalize_private_key(private_key)
-        logger.info("Initializing Yandex Auth...")
-
         self.jwt_token = None
         self.jwt_expires_at = 0
         self.iam_key = None
@@ -41,10 +39,10 @@ class YandexAuth:
         return key.replace("\\n", "\n")
 
     def _is_jwt_valid(self) -> bool:
-        return self.jwt_token is not None and time.time() < self.jwt_expires_at - 60  # 60 seconds buffer
+        return self.jwt_token is not None and time.time() < self.jwt_expires_at - 60
 
     def _is_iam_valid(self) -> bool:
-        return self.iam_key is not None and time.time() < self.iam_expires_at - 60  # 60 seconds buffer
+        return self.iam_key is not None and time.time() < self.iam_expires_at - 60
 
     async def get_iam_key(self) -> str:
         try:

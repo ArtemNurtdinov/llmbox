@@ -1,25 +1,8 @@
-from app.domain.models import (
-    AIMessage,
-    ImageContentItem,
-    Message,
-    TextContentItem,
-    AIAssistant as DomainAIAssistant,
-    Role as DomainRole,
-    ContentType as DomainContentType,
-)
-from app.application.dto import (
-    MessageDTO,
-    AIMessageDTO,
-    TextContentItemDTO,
-    ImageContentItemDTO,
-    GenerateAIRequestDTO,
-    GenerateVisionAIRequestDTO,
-)
-from app.application.dto import (
-    Role as ApplicationRole,
-    ContentType as ApplicationContentType,
-    AIAssistant as ApplicationAIAssistant,
-)
+from app.domain.models import AIMessage, ImageContentItem, Message, TextContentItem, AIAssistant as DomainAIAssistant, \
+    Role as DomainRole, ContentType as DomainContentType
+from app.application.dto import MessageDTO, AIMessageDTO, TextContentItemDTO, ImageContentItemDTO, GenerateAIRequestDTO, \
+    GenerateVisionAIRequestDTO
+from app.application.dto import Role as ApplicationRole, ContentType as ApplicationContentType, AIAssistant as ApplicationAIAssistant
 
 
 def _to_domain_role(role: ApplicationRole) -> DomainRole:

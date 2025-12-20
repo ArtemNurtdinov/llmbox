@@ -23,10 +23,7 @@ class GenerateTextAIUseCase:
 
         client = self._text_clients.get(assistant)
         if client is None:
-            error_msg = f"Unknown AI assistant: {assistant.value}"
-            logger.error(error_msg)
             raise UnknownAIAssistantException(assistant.value)
-
         try:
             domain_response: AIResponse = await client.generate(messages)
             return to_ai_response_dto(domain_response)

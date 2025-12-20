@@ -13,10 +13,7 @@ from app.infrastructure.clients.yandex_auth import YandexAuth
 def create_ai_service(config: Config) -> AIService:
     if not config.open_ai.model or not config.open_ai.api_key:
         raise ValueError("OpenAI model and api_key must be configured")
-    openai_client = OpenAIClient(
-        model=config.open_ai.model,
-        api_key=config.open_ai.api_key
-    )
+    openai_client = OpenAIClient(model=config.open_ai.model, api_key=config.open_ai.api_key)
 
     if not config.yandex.key_id or not config.yandex.service_account_id or not config.yandex.private_key:
         raise ValueError("Yandex authentication credentials must be configured")
@@ -78,7 +75,4 @@ def create_ai_service(config: Config) -> AIService:
     generate_text_use_case = GenerateTextAIUseCase(text_clients=text_clients)
     generate_vision_use_case = GenerateVisionAIUseCase(vision_client=vision_client)
 
-    return AIService(
-        generate_text_use_case=generate_text_use_case,
-        generate_vision_use_case=generate_vision_use_case,
-    )
+    return AIService(generate_text_use_case=generate_text_use_case, generate_vision_use_case=generate_vision_use_case)
