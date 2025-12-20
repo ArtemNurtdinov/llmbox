@@ -4,12 +4,7 @@ from typing import Callable, Any
 
 from fastapi import HTTPException
 
-from app.domain.exceptions import (
-    DomainException,
-    UnknownAIAssistantException,
-    AIServiceException,
-    InvalidMessageException,
-)
+from app.domain.exceptions import DomainException, UnknownAIAssistantException, AIServiceException
 
 logger = logging.getLogger(__name__)
 
@@ -22,9 +17,6 @@ def handle_service_errors(endpoint_name: str = None):
             try:
                 return await func(*args, **kwargs)
             except UnknownAIAssistantException as exc:
-                logger.error("%s VALIDATION ERROR: %s", name.upper(), exc)
-                raise HTTPException(status_code=400, detail=str(exc))
-            except InvalidMessageException as exc:
                 logger.error("%s VALIDATION ERROR: %s", name.upper(), exc)
                 raise HTTPException(status_code=400, detail=str(exc))
             except AIServiceException as exc:

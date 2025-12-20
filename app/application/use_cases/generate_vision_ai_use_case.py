@@ -24,17 +24,7 @@ class GenerateVisionAIUseCase:
             domain_response: AIResponse = await self._vision_client.generate_vision(messages)
             return to_ai_response_dto(domain_response)
         except AIServiceException:
-            # Пробрасываем доменные исключения как есть
             raise
         except Exception as exc:
-            logger.error(
-                "Error in GenerateVisionAIUseCase: %s",
-                exc,
-                exc_info=True
-            )
-            # Оборачиваем инфраструктурные ошибки в доменное исключение
-            raise AIServiceException(
-                "Failed to generate vision AI response",
-                original_error=exc
-            )
-
+            logger.error("Error in GenerateVisionAIUseCase: %s", exc, exc_info=True)
+            raise AIServiceException("Failed to generate vision AI response", original_error=exc)
