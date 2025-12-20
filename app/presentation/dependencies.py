@@ -77,11 +77,9 @@ def create_ai_service(config: Config) -> AIService:
 
     vision_client: VisionModelClient = openai_client
 
-    # Создаем Use Cases
     generate_text_use_case = GenerateTextAIUseCase(text_clients=text_clients)
     generate_vision_use_case = GenerateVisionAIUseCase(vision_client=vision_client)
 
-    # Создаем сервис как фасад над Use Cases
     return AIService(
         generate_text_use_case=generate_text_use_case,
         generate_vision_use_case=generate_vision_use_case,
