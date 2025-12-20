@@ -4,7 +4,6 @@ from typing import List, Union
 
 
 class Role(str, Enum):
-    """Role enum для application слоя"""
     SYSTEM = "system"
     USER = "user"
     ASSISTANT = "assistant"
@@ -12,13 +11,11 @@ class Role(str, Enum):
 
 @unique
 class ContentType(str, Enum):
-    """ContentType enum для application слоя"""
     TEXT = "text"
     IMAGE_URL = "image_url"
 
 
 class AIAssistant(str, Enum):
-    """AIAssistant enum для application слоя"""
     CHAT_GPT = "chat_gpt"
     YANDEX_GPT = "yandex_gpt"
     GPT_OSS_120B = "gpt_oss_120b"

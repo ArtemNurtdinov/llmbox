@@ -2,6 +2,7 @@ import logging
 
 from app.domain.interfaces import VisionModelClient
 from app.domain.models import AIResponse
+from app.domain.exceptions import AIServiceException
 from app.application.dto import AIResponseDTO, GenerateVisionAIRequestDTO
 from app.application.mappers.domain_to_dto import to_ai_response_dto
 from app.application.mappers.dto_to_domain import to_domain_ai_messages_from_dto
@@ -22,11 +23,18 @@ class GenerateVisionAIUseCase:
         try:
             domain_response: AIResponse = await self._vision_client.generate_vision(messages)
             return to_ai_response_dto(domain_response)
+        except AIServiceException:
+            # Пробрасываем доменные исключения как есть
+            raise
         except Exception as exc:
             logger.error(
                 "Error in GenerateVisionAIUseCase: %s",
                 exc,
                 exc_info=True
             )
-            raise
+            # Оборачиваем инфраструктурные ошибки в доменное исключение
+            raise AIServiceException(
+                "Failed to generate vision AI response",
+                original_error=exc
+            )
 

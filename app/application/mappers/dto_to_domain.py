@@ -23,17 +23,14 @@ from app.application.dto import (
 
 
 def _to_domain_role(role: ApplicationRole) -> DomainRole:
-    """Конвертирует Role из application слоя в domain слой"""
     return DomainRole(role.value)
 
 
 def _to_domain_content_type(content_type: ApplicationContentType) -> DomainContentType:
-    """Конвертирует ContentType из application слоя в domain слой"""
     return DomainContentType(content_type.value)
 
 
 def _to_domain_ai_assistant(assistant: ApplicationAIAssistant) -> DomainAIAssistant:
-    """Конвертирует AIAssistant из application слоя в domain слой"""
     return DomainAIAssistant(assistant.value)
 
 
