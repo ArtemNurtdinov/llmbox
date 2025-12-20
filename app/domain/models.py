@@ -40,10 +40,6 @@ class ImageContentItem:
     image_base64: str
     type: ContentType = ContentType.IMAGE_URL
 
-    @property
-    def image_url(self) -> dict:
-        return {"url": self.image_base64}
-
 
 @dataclass
 class AIMessage:
