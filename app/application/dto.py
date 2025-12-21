@@ -1,26 +1,7 @@
 from dataclasses import dataclass
-from enum import Enum, unique
 from typing import List, Union
 
-
-class Role(str, Enum):
-    SYSTEM = "system"
-    USER = "user"
-    ASSISTANT = "assistant"
-
-
-@unique
-class ContentType(str, Enum):
-    TEXT = "text"
-    IMAGE_URL = "image_url"
-
-
-class AIAssistant(str, Enum):
-    CHAT_GPT = "chat_gpt"
-    YANDEX_GPT = "yandex_gpt"
-    GPT_OSS_120B = "gpt_oss_120b"
-    GPT_OSS_20B = "gpt_oss_20b"
-    QWEN3_235B = "qwen3_235b"
+from app.domain.models import Role, ContentType, AIAssistant
 
 
 @dataclass

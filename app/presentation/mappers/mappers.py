@@ -17,7 +17,7 @@ from app.application.dto import (
     TextContentItemDTO,
     ImageContentItemDTO,
 )
-from app.application.dto import Role, ContentType, AIAssistant
+from app.domain.models import Role, ContentType, AIAssistant
 
 
 def to_message_dto(schema: MessageSchema) -> MessageDTO:
