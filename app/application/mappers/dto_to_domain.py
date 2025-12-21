@@ -5,6 +5,7 @@ from app.domain.models import (
     TextContentItem,
     AIAssistant as DomainAIAssistant,
 )
+from app.application.exceptions import ValidationException
 from app.application.dto import (
     MessageDTO,
     AIMessageDTO,
@@ -27,7 +28,7 @@ def to_domain_ai_message(dto: AIMessageDTO) -> AIMessage:
         elif isinstance(item, ImageContentItemDTO):
             content_items.append(ImageContentItem(image_base64=item.image_base64, type=item.type))
         else:
-            raise ValueError(f"Unknown content item type: {type(item)}")
+            raise ValidationException(f"Unknown content item type: {type(item)}")
 
     return AIMessage(role=dto.role, content=content_items)
 
