@@ -1,8 +1,6 @@
 from app.application.interfaces.config_provider import ConfigProvider
 from app.application.interfaces.config_source import ConfigSource
 from app.application.interfaces.config_validator import ConfigValidator
-from app.application.services.config_validator import AppConfigValidator
-from app.infrastructure.config.env_config_source import EnvConfigSource
 from core.config import (
     ApplicationConfig,
     Config,
@@ -14,9 +12,9 @@ from core.config import (
 
 class EnvConfigProvider(ConfigProvider):
 
-    def __init__(self, source: ConfigSource | None = None, validator: ConfigValidator | None = None):
-        self._source = source or EnvConfigSource()
-        self._validator = validator or AppConfigValidator()
+    def __init__(self, source: ConfigSource, validator: ConfigValidator):
+        self._source = source
+        self._validator = validator
 
     def get_config(self) -> Config:
         config = self._load_config_from_env()

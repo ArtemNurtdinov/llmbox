@@ -8,12 +8,13 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 
+from app.application.services.config_validator import AppConfigValidator
 from app.infrastructure.config.env_config_provider import EnvConfigProvider
 from app.infrastructure.config.env_config_source import EnvConfigSource
 from app.presentation.api import routes as ai_routes
 
 load_dotenv()
-config_provider = EnvConfigProvider(EnvConfigSource())
+config_provider = EnvConfigProvider(EnvConfigSource(), AppConfigValidator())
 config = config_provider.get_config()
 
 root_logger = logging.getLogger()
