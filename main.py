@@ -7,11 +7,10 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.infrastructure.config.env_config_provider import EnvConfigProvider
+from app.infrastructure.config.env_config_provider import get_env_config_provider
 from app.presentation.api import routes as ai_routes
 
-provider = EnvConfigProvider()
-config = provider.get_config()
+config = get_env_config_provider().get_config()
 
 root_logger = logging.getLogger()
 root_logger.setLevel(config.logging.level)

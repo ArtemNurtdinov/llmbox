@@ -1,10 +1,7 @@
 from functools import lru_cache
-
 from dotenv import load_dotenv
-
-from core.config import Config, load_config
 from app.application.interfaces.config_provider import ConfigProvider
-
+from core.config import Config, load_config
 
 class EnvConfigProvider(ConfigProvider):
 
@@ -14,3 +11,8 @@ class EnvConfigProvider(ConfigProvider):
     @lru_cache()
     def get_config(self) -> Config:
         return load_config()
+
+
+@lru_cache()
+def get_env_config_provider() -> EnvConfigProvider:
+    return EnvConfigProvider()
