@@ -13,3 +13,6 @@ class ServiceUnavailableException(ApplicationException):
         self.original_error = original_error
         super().__init__(message)
 
+
+class ConfigurationException(ApplicationException):
+    """Startup/configuration error (fail fast on invalid config)."""
