@@ -1,45 +1,18 @@
 import logging
-import sys
 import time
-from logging.handlers import TimedRotatingFileHandler
 
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 
-from app.application.services.config_validator import AppConfigValidator
-from app.infrastructure.config.env_config_provider import EnvConfigProvider
-from app.infrastructure.config.env_config_source import EnvConfigSource
+from app.composition.config_bootstrap import load_config
+from app.composition.logging_bootstrap import setup_logging
 from app.presentation.api import routes as ai_routes
 
 load_dotenv()
-config_provider = EnvConfigProvider(EnvConfigSource(), AppConfigValidator())
-config = config_provider.get_config()
-
-root_logger = logging.getLogger()
-root_logger.setLevel(config.logging.level)
-root_logger.handlers.clear()
-
-file_handler = TimedRotatingFileHandler(
-    filename=config.logging.file,
-    when='H',
-    interval=8,
-    backupCount=2,
-    utc=False,
-    encoding='utf-8'
-)
-file_handler.setLevel(config.logging.level)
-file_formatter = logging.Formatter(config.logging.format)
-file_handler.setFormatter(file_formatter)
-
-console_handler = logging.StreamHandler(sys.stdout)
-console_handler.setLevel(config.logging.level)
-console_formatter = logging.Formatter(config.logging.format)
-console_handler.setFormatter(console_formatter)
-
-root_logger.addHandler(file_handler)
-root_logger.addHandler(console_handler)
+config = load_config()
+setup_logging(config.logging)
 
 logger = logging.getLogger(__name__)
 
