@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 import httpx
 
@@ -25,7 +24,7 @@ class YandexGPTClient(TextModelClient):
         self.model_name = model_name
         self.auth = auth
 
-    async def generate(self, user_messages: List[Message]) -> AIResponse:
+    async def generate(self, user_messages: list[Message]) -> AIResponse:
         model_uri = f"{self._model_path}{self.model_name}"
         data = {
             "modelUri": model_uri,

@@ -1,5 +1,5 @@
-from app.domain.models import AIResponse, Usage
 from app.application.dto import AIResponseDTO, UsageDTO
+from app.domain.models import AIResponse, Usage
 
 
 def to_usage_dto(usage: Usage) -> UsageDTO:

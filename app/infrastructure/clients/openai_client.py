@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionAssistantMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
@@ -17,7 +16,7 @@ class OpenAIClient(TextModelClient, VisionModelClient):
         self._model = model
         self._client = AsyncOpenAI(api_key=api_key)
 
-    async def generate(self, user_messages: List[Message]) -> AIResponse:
+    async def generate(self, user_messages: list[Message]) -> AIResponse:
         return await self._generate_text(user_messages)
 
     @staticmethod
@@ -39,7 +38,7 @@ class OpenAIClient(TextModelClient, VisionModelClient):
             "content": content_items
         }
 
-    async def _generate_text(self, user_messages: List[Message]) -> AIResponse:
+    async def _generate_text(self, user_messages: list[Message]) -> AIResponse:
         messages = []
 
         for message in user_messages:
@@ -60,7 +59,7 @@ class OpenAIClient(TextModelClient, VisionModelClient):
         usage_model = Usage(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens, total_tokens=total_tokens)
         return AIResponse(assistant_message=assistant_message, usage=usage_model)
 
-    async def generate_vision(self, user_messages: List[AIMessage]) -> AIResponse:
+    async def generate_vision(self, user_messages: list[AIMessage]) -> AIResponse:
         messages = [self._serialize_message(msg) for msg in user_messages]
 
         response = await self._client.chat.completions.create(model=self._model, messages=messages)

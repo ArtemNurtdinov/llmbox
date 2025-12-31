@@ -1,12 +1,12 @@
 import logging
 
-from app.domain.interfaces import VisionModelClient
-from app.domain.models import AIResponse
-from app.domain.exceptions import AIServiceException, DomainException
 from app.application.dto import AIResponseDTO, GenerateVisionAIRequestDTO
+from app.application.exceptions import ServiceUnavailableException, ValidationException
 from app.application.mappers.domain_to_dto import to_ai_response_dto
 from app.application.mappers.dto_to_domain import to_domain_ai_messages_from_dto
-from app.application.exceptions import ValidationException, ServiceUnavailableException
+from app.domain.exceptions import AIServiceException, DomainException
+from app.domain.interfaces import VisionModelClient
+from app.domain.models import AIResponse
 
 logger = logging.getLogger(__name__)
 

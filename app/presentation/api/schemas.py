@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import List, Union
 
 from pydantic import BaseModel
 
@@ -40,7 +39,7 @@ class ImageContentItemSchema(BaseModel):
 
 class AIMessageSchema(BaseModel):
     role: RoleSchema
-    content: List[Union[TextContentItemSchema, ImageContentItemSchema]]
+    content: list[TextContentItemSchema | ImageContentItemSchema]
 
 
 class UsageSchema(BaseModel):
@@ -55,9 +54,9 @@ class AIResponseSchema(BaseModel):
 
 
 class GenerateAIRequestSchema(BaseModel):
-    messages: List[MessageSchema]
+    messages: list[MessageSchema]
     assistant: AIAssistantSchema
 
 
 class GenerateVisionAIRequestSchema(BaseModel):
-    messages: List[AIMessageSchema]
+    messages: list[AIMessageSchema]

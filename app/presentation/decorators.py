@@ -1,13 +1,14 @@
 import logging
+from collections.abc import Callable
 from functools import wraps
-from typing import Callable, Any
+from typing import Any
 
 from fastapi import HTTPException
 
 from app.application.exceptions import (
     ApplicationException,
-    ValidationException,
     ServiceUnavailableException,
+    ValidationException,
 )
 
 logger = logging.getLogger(__name__)

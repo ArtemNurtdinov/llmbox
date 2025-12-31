@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from openai import AsyncOpenAI
 from openai.types.chat import (
@@ -22,7 +21,7 @@ class YandexGPTOssClient(TextModelClient):
         self._model_path = model_path
         self.open_ai = AsyncOpenAI(api_key=api_key, base_url=base_url)
 
-    async def generate(self, user_messages: List[Message]) -> AIResponse:
+    async def generate(self, user_messages: list[Message]) -> AIResponse:
         messages = []
 
         for message in user_messages:

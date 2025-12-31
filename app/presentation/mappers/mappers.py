@@ -1,23 +1,23 @@
+from app.application.dto import (
+    AIMessageDTO,
+    AIResponseDTO,
+    GenerateAIRequestDTO,
+    GenerateVisionAIRequestDTO,
+    ImageContentItemDTO,
+    MessageDTO,
+    TextContentItemDTO,
+)
+from app.domain.models import AIAssistant, ContentType, Role
 from app.presentation.api.schemas import (
     AIMessageSchema,
     AIResponseSchema,
-    MessageSchema,
-    UsageSchema,
-    TextContentItemSchema,
-    ImageContentItemSchema,
     GenerateAIRequestSchema,
     GenerateVisionAIRequestSchema,
+    ImageContentItemSchema,
+    MessageSchema,
+    TextContentItemSchema,
+    UsageSchema,
 )
-from app.application.dto import (
-    GenerateAIRequestDTO,
-    GenerateVisionAIRequestDTO,
-    AIResponseDTO,
-    MessageDTO,
-    AIMessageDTO,
-    TextContentItemDTO,
-    ImageContentItemDTO,
-)
-from app.domain.models import Role, ContentType, AIAssistant
 
 
 def to_message_dto(schema: MessageSchema) -> MessageDTO:

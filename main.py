@@ -2,9 +2,9 @@ import logging
 import time
 
 import uvicorn
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from dotenv import load_dotenv
 
 from app.composition.config_bootstrap import load_config
 from app.composition.logging_bootstrap import setup_logging
@@ -28,7 +28,6 @@ app = FastAPI(
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
-    client_ip = request.client.host
     method = request.method
     url = str(request.url)
 

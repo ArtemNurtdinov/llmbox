@@ -1,13 +1,13 @@
-from core.config import Config
 from app.application.services import AIService
 from app.application.use_cases.generate_text_ai_use_case import GenerateTextAIUseCase
 from app.application.use_cases.generate_vision_ai_use_case import GenerateVisionAIUseCase
 from app.domain.interfaces import TextModelClient, VisionModelClient
 from app.domain.models import AIAssistant
 from app.infrastructure.clients.openai_client import OpenAIClient
+from app.infrastructure.clients.yandex_auth import YandexAuth
 from app.infrastructure.clients.yandex_gpt_client import YandexGPTClient
 from app.infrastructure.clients.yandex_gpt_oss_client import YandexGPTOssClient
-from app.infrastructure.clients.yandex_auth import YandexAuth
+from core.config import Config
 
 
 def build_ai_service(config: Config) -> AIService:

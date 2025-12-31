@@ -1,9 +1,9 @@
 import unittest
 
-from app.application.services.config_validator import AppConfigValidator
-from app.application.interfaces.config_source import ConfigSource
-from app.infrastructure.config.env_config_provider import EnvConfigProvider
 from app.application.exceptions import ConfigurationException
+from app.application.interfaces.config_source import ConfigSource
+from app.application.services.config_validator import AppConfigValidator
+from app.infrastructure.config.env_config_provider import EnvConfigProvider
 
 
 class FakeConfigSource(ConfigSource):

@@ -1,24 +1,23 @@
 import logging
-from typing import Dict
 
-from app.domain.interfaces import TextModelClient
-from app.domain.models import AIAssistant, AIResponse
-from app.domain.exceptions import (
-    UnknownAIAssistantException,
-    AIServiceException,
-    DomainException,
-)
 from app.application.dto import AIResponseDTO, GenerateAIRequestDTO
+from app.application.exceptions import ServiceUnavailableException, ValidationException
 from app.application.mappers.domain_to_dto import to_ai_response_dto
 from app.application.mappers.dto_to_domain import to_domain_messages_from_dto
-from app.application.exceptions import ValidationException, ServiceUnavailableException
+from app.domain.exceptions import (
+    AIServiceException,
+    DomainException,
+    UnknownAIAssistantException,
+)
+from app.domain.interfaces import TextModelClient
+from app.domain.models import AIAssistant, AIResponse
 
 logger = logging.getLogger(__name__)
 
 
 class GenerateTextAIUseCase:
 
-    def __init__(self, text_clients: Dict[AIAssistant, TextModelClient]):
+    def __init__(self, text_clients: dict[AIAssistant, TextModelClient]):
         self._text_clients = text_clients
 
     async def execute(self, request: GenerateAIRequestDTO) -> AIResponseDTO:

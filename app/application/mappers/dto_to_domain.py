@@ -1,18 +1,20 @@
+from app.application.dto import (
+    AIMessageDTO,
+    GenerateAIRequestDTO,
+    GenerateVisionAIRequestDTO,
+    ImageContentItemDTO,
+    MessageDTO,
+    TextContentItemDTO,
+)
+from app.application.exceptions import ValidationException
+from app.domain.models import (
+    AIAssistant as DomainAIAssistant,
+)
 from app.domain.models import (
     AIMessage,
     ImageContentItem,
     Message,
     TextContentItem,
-    AIAssistant as DomainAIAssistant,
-)
-from app.application.exceptions import ValidationException
-from app.application.dto import (
-    MessageDTO,
-    AIMessageDTO,
-    TextContentItemDTO,
-    ImageContentItemDTO,
-    GenerateAIRequestDTO,
-    GenerateVisionAIRequestDTO,
 )
 
 

@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from typing import List, Union
 
-from app.domain.models import Role, ContentType, AIAssistant
+from app.domain.models import AIAssistant, ContentType, Role
 
 
 @dataclass
@@ -25,18 +24,18 @@ class ImageContentItemDTO:
 @dataclass
 class AIMessageDTO:
     role: Role
-    content: List[Union[TextContentItemDTO, ImageContentItemDTO]]
+    content: list[TextContentItemDTO | ImageContentItemDTO]
 
 
 @dataclass
 class GenerateAIRequestDTO:
-    messages: List[MessageDTO]
+    messages: list[MessageDTO]
     assistant: AIAssistant
 
 
 @dataclass
 class GenerateVisionAIRequestDTO:
-    messages: List[AIMessageDTO]
+    messages: list[AIMessageDTO]
 
 
 @dataclass

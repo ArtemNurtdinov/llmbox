@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 
-from app.presentation.dependencies import get_ai_service
 from app.application.services import AIService
 from app.presentation.api.schemas import AIResponseSchema, GenerateAIRequestSchema, GenerateVisionAIRequestSchema
-from app.presentation.mappers.mappers import to_response_schema, to_generate_ai_request_dto, to_generate_vision_ai_request_dto
 from app.presentation.decorators import handle_service_errors
+from app.presentation.dependencies import get_ai_service
+from app.presentation.mappers.mappers import to_generate_ai_request_dto, to_generate_vision_ai_request_dto, to_response_schema
 
 router = APIRouter()
 
