@@ -1,6 +1,5 @@
 from functools import lru_cache
 
-from app.application.use_cases import GenerateTextAIUseCase, GenerateVisionAIUseCase
 from app.config.domain.config_repository import ConfigRepository
 from app.config.domain.config_source import ConfigSource
 from app.config.domain.model.configuration import Config
@@ -13,6 +12,8 @@ from app.infrastructure.clients.openai_client import OpenAIClient
 from app.infrastructure.clients.yandex_auth import YandexAuth
 from app.infrastructure.clients.yandex_gpt_client import YandexGPTClient
 from app.infrastructure.clients.yandex_gpt_oss_client import YandexGPTOssClient
+from app.llm.application.usecase.generate_text_ai_use_case import GenerateTextAIUseCase
+from app.llm.application.usecase.generate_vision_ai_use_case import GenerateVisionAIUseCase
 from app.llm.domain.model.assistant import AIAssistant
 
 
