@@ -12,7 +12,3 @@ class ServiceUnavailableException(ApplicationException):
     def __init__(self, message: str, original_error: Exception | None = None):
         self.original_error = original_error
         super().__init__(message)
-
-
-class ConfigurationException(ApplicationException):
-    """Startup/configuration error (fail fast on invalid config)."""
