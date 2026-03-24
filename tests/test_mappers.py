@@ -15,8 +15,9 @@ from app.application.mappers.dto_to_domain import (
     to_domain_message,
     to_domain_messages_from_dto,
 )
-from app.domain.models import ContentType, Role
+from app.domain.models import ContentType
 from app.llm.domain.model.assistant import AIAssistant
+from app.llm.domain.model.role import Role
 
 
 class DummyContentItem:

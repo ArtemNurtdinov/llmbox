@@ -1,11 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum, unique
 
-
-class Role(str, Enum):
-    SYSTEM = "system"
-    USER = "user"
-    ASSISTANT = "assistant"
+from app.llm.domain.model.role import Role
 
 
 @dataclass

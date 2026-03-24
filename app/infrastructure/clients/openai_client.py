@@ -4,7 +4,8 @@ from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionAssistantMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
 
 from app.domain.interfaces import TextModelClient, VisionModelClient
-from app.domain.models import AIMessage, AIResponse, ImageContentItem, Message, Role, TextContentItem, Usage
+from app.domain.models import AIMessage, AIResponse, ImageContentItem, Message, TextContentItem, Usage
+from app.llm.domain.model.role import Role
 
 logger = logging.getLogger(__name__)
 
@@ -24,19 +25,10 @@ class OpenAIClient(TextModelClient, VisionModelClient):
         content_items = []
         for item in msg.content:
             if isinstance(item, TextContentItem):
-                content_items.append({
-                    "type": "text",
-                    "text": item.text
-                })
+                content_items.append({"type": "text", "text": item.text})
             elif isinstance(item, ImageContentItem):
-                content_items.append({
-                    "type": "image_url",
-                    "image_url": {"url": item.image_base64}
-                })
-        return {
-            "role": msg.role.value,
-            "content": content_items
-        }
+                content_items.append({"type": "image_url", "image_url": {"url": item.image_base64}})
+        return {"role": msg.role.value, "content": content_items}
 
     async def _generate_text(self, user_messages: list[Message]) -> AIResponse:
         messages = []

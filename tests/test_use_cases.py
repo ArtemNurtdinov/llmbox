@@ -15,8 +15,9 @@ from app.application.exceptions import (
 from app.application.use_cases.generate_text_ai_use_case import GenerateTextAIUseCase
 from app.application.use_cases.generate_vision_ai_use_case import GenerateVisionAIUseCase
 from app.domain.exceptions import AIServiceException, DomainException, UnknownAIAssistantException
-from app.domain.models import AIResponse, Role, Usage
+from app.domain.models import AIResponse, Usage
 from app.llm.domain.model.assistant import AIAssistant
+from app.llm.domain.model.role import Role
 
 
 class DummyTextClient:

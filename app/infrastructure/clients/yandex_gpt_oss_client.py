@@ -8,7 +8,8 @@ from openai.types.chat import (
 )
 
 from app.domain.interfaces import TextModelClient
-from app.domain.models import AIResponse, Message, Role, Usage
+from app.domain.models import AIResponse, Message, Usage
+from app.llm.domain.model.role import Role
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,12 @@ class YandexGPTOssClient(TextModelClient):
 
         logger.info("Sending request to OpenAI-compatible API")
         model = f"{self._model_path}{self.model_name}"
-        completion = await self.open_ai.chat.completions.create(model=model, messages=messages, temperature=0.2, max_tokens=2000,)
+        completion = await self.open_ai.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=0.2,
+            max_tokens=2000,
+        )
 
         assistant_message = completion.choices[0].message.content
         prompt_tokens = completion.usage.prompt_tokens
@@ -45,5 +51,3 @@ class YandexGPTOssClient(TextModelClient):
 
         usage_model = Usage(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens, total_tokens=total_tokens)
         return AIResponse(assistant_message=assistant_message, usage=usage_model)
-
-
