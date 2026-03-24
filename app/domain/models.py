@@ -4,12 +4,6 @@ from enum import Enum, unique
 from app.llm.domain.model.role import Role
 
 
-@dataclass
-class Message:
-    role: Role
-    content: str
-
-
 @unique
 class ContentType(str, Enum):
     TEXT = "text"

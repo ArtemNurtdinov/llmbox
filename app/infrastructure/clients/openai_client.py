@@ -4,7 +4,8 @@ from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionAssistantMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
 
 from app.domain.interfaces import TextModelClient, VisionModelClient
-from app.domain.models import AIMessage, AIResponse, ImageContentItem, Message, TextContentItem, Usage
+from app.domain.models import AIMessage, AIResponse, ImageContentItem, TextContentItem, Usage
+from app.llm.domain.model.message import Message
 from app.llm.domain.model.role import Role
 
 logger = logging.getLogger(__name__)

@@ -1,13 +1,12 @@
 from typing import Protocol
 
-from app.domain.models import AIMessage, AIResponse, Message
+from app.domain.models import AIMessage, AIResponse
+from app.llm.domain.model.message import Message
 
 
 class TextModelClient(Protocol):
-    async def generate(self, messages: list[Message]) -> AIResponse:
-        ...
+    async def generate(self, messages: list[Message]) -> AIResponse: ...
 
 
 class VisionModelClient(Protocol):
-    async def generate_vision(self, messages: list[AIMessage]) -> AIResponse:
-        ...
+    async def generate_vision(self, messages: list[AIMessage]) -> AIResponse: ...

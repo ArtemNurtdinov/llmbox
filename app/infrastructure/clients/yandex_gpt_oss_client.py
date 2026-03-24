@@ -8,7 +8,8 @@ from openai.types.chat import (
 )
 
 from app.domain.interfaces import TextModelClient
-from app.domain.models import AIResponse, Message, Usage
+from app.domain.models import AIResponse, Usage
+from app.llm.domain.model.message import Message
 from app.llm.domain.model.role import Role
 
 logger = logging.getLogger(__name__)

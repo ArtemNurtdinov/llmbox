@@ -3,8 +3,9 @@ import logging
 import httpx
 
 from app.domain.interfaces import TextModelClient
-from app.domain.models import AIResponse, Message, Usage
+from app.domain.models import AIResponse, Usage
 from app.infrastructure.clients.yandex_auth import YandexAuth
+from app.llm.domain.model.message import Message
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +34,7 @@ class YandexGPTClient(TextModelClient):
                 "temperature": 0.2,
                 "maxTokens": 2000,
             },
-            "messages": [
-                {"role": message.role.value, "text": message.content} for message in user_messages
-            ],
+            "messages": [{"role": message.role.value, "text": message.content} for message in user_messages],
         }
 
         iam_key = await self.auth.get_iam_key()

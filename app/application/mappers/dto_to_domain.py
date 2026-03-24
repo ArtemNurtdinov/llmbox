@@ -10,10 +10,10 @@ from app.application.exceptions import ValidationException
 from app.domain.models import (
     AIMessage,
     ImageContentItem,
-    Message,
     TextContentItem,
 )
 from app.llm.domain.model.assistant import AIAssistant
+from app.llm.domain.model.message import Message
 
 
 def to_domain_message(dto: MessageDTO) -> Message:
