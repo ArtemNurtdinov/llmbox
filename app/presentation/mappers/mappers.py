@@ -7,7 +7,8 @@ from app.application.dto import (
     MessageDTO,
     TextContentItemDTO,
 )
-from app.domain.models import AIAssistant, ContentType, Role
+from app.domain.models import ContentType, Role
+from app.llm.domain.model.assistant import AIAssistant
 from app.presentation.api.schemas import (
     AIMessageSchema,
     AIResponseSchema,
@@ -39,7 +40,7 @@ def to_ai_message_dto(schema: AIMessageSchema) -> AIMessageDTO:
             content_items.append(to_text_content_item_dto(item))
         elif isinstance(item, ImageContentItemSchema):
             content_items.append(to_image_content_item_dto(item))
-    
+
     return AIMessageDTO(role=Role(schema.role.value), content=content_items)
 
 

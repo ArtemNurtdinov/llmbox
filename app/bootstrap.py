@@ -9,11 +9,11 @@ from app.config.infrastructure.config_source import EnvConfigSource
 from app.config.validation.application.config_validator import AppConfigValidator
 from app.config.validation.domain.config_validator import ConfigValidator
 from app.domain.interfaces import TextModelClient, VisionModelClient
-from app.domain.models import AIAssistant
 from app.infrastructure.clients.openai_client import OpenAIClient
 from app.infrastructure.clients.yandex_auth import YandexAuth
 from app.infrastructure.clients.yandex_gpt_client import YandexGPTClient
 from app.infrastructure.clients.yandex_gpt_oss_client import YandexGPTOssClient
+from app.llm.domain.model.assistant import AIAssistant
 
 
 @lru_cache

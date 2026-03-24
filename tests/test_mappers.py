@@ -15,11 +15,11 @@ from app.application.mappers.dto_to_domain import (
     to_domain_message,
     to_domain_messages_from_dto,
 )
-from app.domain.models import AIAssistant, ContentType, Role
+from app.domain.models import ContentType, Role
+from app.llm.domain.model.assistant import AIAssistant
 
 
 class DummyContentItem:
-
     def __init__(self) -> None:
         self.type = "unknown"
 
@@ -85,4 +85,3 @@ class MapperTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

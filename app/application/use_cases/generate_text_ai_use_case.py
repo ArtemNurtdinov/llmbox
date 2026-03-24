@@ -8,7 +8,8 @@ from app.domain.exceptions import (
     UnknownAIAssistantException,
 )
 from app.domain.interfaces import TextModelClient
-from app.domain.models import AIAssistant, AIResponse
+from app.domain.models import AIResponse
+from app.llm.domain.model.assistant import AIAssistant
 
 
 class GenerateTextAIUseCase:

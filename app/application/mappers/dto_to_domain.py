@@ -8,14 +8,12 @@ from app.application.dto import (
 )
 from app.application.exceptions import ValidationException
 from app.domain.models import (
-    AIAssistant as DomainAIAssistant,
-)
-from app.domain.models import (
     AIMessage,
     ImageContentItem,
     Message,
     TextContentItem,
 )
+from app.llm.domain.model.assistant import AIAssistant
 
 
 def to_domain_message(dto: MessageDTO) -> Message:
@@ -35,7 +33,7 @@ def to_domain_ai_message(dto: AIMessageDTO) -> AIMessage:
     return AIMessage(role=dto.role, content=content_items)
 
 
-def to_domain_messages_from_dto(dto: GenerateAIRequestDTO) -> tuple[list[Message], DomainAIAssistant]:
+def to_domain_messages_from_dto(dto: GenerateAIRequestDTO) -> tuple[list[Message], AIAssistant]:
     messages = [to_domain_message(msg) for msg in dto.messages]
     return messages, dto.assistant
 

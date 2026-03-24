@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from app.domain.models import AIAssistant, ContentType, Role
+from app.domain.models import ContentType, Role
+from app.llm.domain.model.assistant import AIAssistant
 
 
 @dataclass
