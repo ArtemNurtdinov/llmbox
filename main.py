@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.composition.config_bootstrap import load_config
+from app.bootstrap import load_config
 from app.composition.logging_bootstrap import setup_logging
 from app.presentation.api import routes as ai_routes
 

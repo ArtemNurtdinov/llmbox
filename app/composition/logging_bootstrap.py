@@ -1,7 +1,7 @@
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
-from core.config import LoggingConfig
+from app.config.domain.model.logging import LoggingConfig
 
 
 def setup_logging(config: LoggingConfig) -> None:
@@ -28,4 +28,3 @@ def setup_logging(config: LoggingConfig) -> None:
 
     root_logger.addHandler(file_handler)
     root_logger.addHandler(console_handler)
-

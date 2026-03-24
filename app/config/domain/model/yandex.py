@@ -1,19 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass
-class ApplicationConfig:
-    host: str
-    port: int
-
-
-@dataclass
-class OpenAIConfig:
-    model: str | None
-    api_key: str | None
-
-
-@dataclass
+@dataclass(frozen=True)
 class YandexConfig:
     key_id: str | None
     service_account_id: str | None
@@ -26,18 +14,3 @@ class YandexConfig:
     qwen_235b_model_name: str | None
     open_ai_api_key: str | None
     open_ai_base_url: str | None
-
-
-@dataclass
-class LoggingConfig:
-    level: str
-    file: str
-    format: str
-
-
-@dataclass
-class Config:
-    application: ApplicationConfig
-    open_ai: OpenAIConfig
-    yandex: YandexConfig
-    logging: LoggingConfig

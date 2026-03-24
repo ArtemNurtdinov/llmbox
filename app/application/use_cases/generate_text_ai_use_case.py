@@ -1,5 +1,3 @@
-import logging
-
 from app.application.dto import AIResponseDTO, GenerateAIRequestDTO
 from app.application.exceptions import ServiceUnavailableException, ValidationException
 from app.application.mappers.domain_to_dto import to_ai_response_dto
@@ -12,17 +10,12 @@ from app.domain.exceptions import (
 from app.domain.interfaces import TextModelClient
 from app.domain.models import AIAssistant, AIResponse
 
-logger = logging.getLogger(__name__)
-
 
 class GenerateTextAIUseCase:
-
     def __init__(self, text_clients: dict[AIAssistant, TextModelClient]):
         self._text_clients = text_clients
 
     async def execute(self, request: GenerateAIRequestDTO) -> AIResponseDTO:
-        logger.info("Executing GenerateTextAIUseCase with assistant=%s", request.assistant)
-
         messages, assistant = to_domain_messages_from_dto(request)
 
         client = self._text_clients.get(assistant)
@@ -38,9 +31,4 @@ class GenerateTextAIUseCase:
         except DomainException as exc:
             raise ValidationException(str(exc))
         except Exception as exc:
-            logger.error("Error in GenerateTextAIUseCase with assistant=%s: %s",assistant.value, exc, exc_info=True)
-            raise ServiceUnavailableException(
-                f"Failed to generate AI response with assistant {assistant.value}",
-                original_error=exc,
-            )
-
+            raise ServiceUnavailableException(f"Failed to generate AI response {assistant.value}", original_error=exc)

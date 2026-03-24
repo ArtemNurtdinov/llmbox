@@ -1,9 +1,9 @@
 import unittest
 
 from app.application.exceptions import ConfigurationException
-from app.application.interfaces.config_source import ConfigSource
-from app.application.services.config_validator import AppConfigValidator
-from app.infrastructure.config.env_config_provider import EnvConfigProvider
+from app.config.domain.config_source import ConfigSource
+from app.config.infrastructure.config_repository import ConfigRepositoryImpl
+from app.config.validation.application.config_validator import AppConfigValidator
 
 
 class FakeConfigSource(ConfigSource):
@@ -35,7 +35,7 @@ FULL_ENV = {
 
 class EnvConfigProviderTests(unittest.TestCase):
     def test_returns_typed_config_and_defaults(self) -> None:
-        provider = EnvConfigProvider(FakeConfigSource(FULL_ENV), AppConfigValidator())
+        provider = ConfigRepositoryImpl(FakeConfigSource(FULL_ENV), AppConfigValidator())
 
         config = provider.get_config()
 
@@ -47,7 +47,7 @@ class EnvConfigProviderTests(unittest.TestCase):
     def test_validator_raises_on_missing_required_keys(self) -> None:
         env = {**FULL_ENV}
         env.pop("OPENAI_MODEL")
-        provider = EnvConfigProvider(FakeConfigSource(env), AppConfigValidator())
+        provider = ConfigRepositoryImpl(FakeConfigSource(env), AppConfigValidator())
 
         with self.assertRaises(ConfigurationException):
             provider.get_config()
@@ -55,4 +55,3 @@ class EnvConfigProviderTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
