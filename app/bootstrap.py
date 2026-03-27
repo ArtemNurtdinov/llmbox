@@ -10,6 +10,7 @@ from app.config.infrastructure.config_repository import ConfigRepositoryImpl
 from app.config.infrastructure.config_source import EnvConfigSource
 from app.config.validation.application.config_validator import AppConfigValidator
 from app.config.validation.domain.config_validator import ConfigValidator
+from app.llm.application.mapper.ai_message_mapper import AIMessageMapper
 from app.llm.application.usecase.generate_text_ai_use_case import GenerateTextAIUseCase
 from app.llm.application.usecase.generate_vision_ai_use_case import GenerateVisionAIUseCase
 from app.llm.domain.llm_repository import LLMRepository
@@ -71,7 +72,7 @@ def build_generate_text_ai_use_case(config: Config) -> GenerateTextAIUseCase:
         yandex_gpt_oss_20b_client=yandex_gpt_oss_20b,
     )
 
-    return GenerateTextAIUseCase(llm_repository)
+    return GenerateTextAIUseCase(llm_repository=llm_repository, ai_message_mapper=AIMessageMapper())
 
 
 @lru_cache
@@ -83,7 +84,7 @@ def get_generate_text_ai_use_case() -> GenerateTextAIUseCase:
 def build_generate_vision_ai_use_case(config: Config) -> GenerateVisionAIUseCase:
     openai_client = OpenAIClient(model=config.open_ai.model, api_key=config.open_ai.api_key)
     llm_vision_repository: LLMVisionRepository = LLMVisionRepositoryImpl(openai_client)
-    return GenerateVisionAIUseCase(llm_vision_repository=llm_vision_repository)
+    return GenerateVisionAIUseCase(llm_vision_repository=llm_vision_repository, ai_message_mapper=AIMessageMapper())
 
 
 @lru_cache

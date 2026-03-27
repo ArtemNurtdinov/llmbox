@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app.bootstrap import load_config, setup_logging
-from app.presentation.api import routes as ai_routes
+from app.llm.infrastructure import routes as ai_routes
 
 load_dotenv()
 config = load_config()

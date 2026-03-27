@@ -1,12 +1,8 @@
-from app.application.dto import (
-    AIMessageDTO,
-    GenerateAIRequestDTO,
-    GenerateVisionAIRequestDTO,
-    ImageContentItemDTO,
-    MessageDTO,
-    TextContentItemDTO,
-)
 from app.application.exceptions import ValidationException
+from app.llm.application.model.ai_message import AIMessageDTO, ImageContentItemDTO, TextContentItemDTO
+from app.llm.application.model.message import MessageDTO
+from app.llm.application.model.request.generate_text import GenerateAIRequestDTO
+from app.llm.application.model.request.vision import GenerateVisionAIRequestDTO
 from app.llm.domain.model.assistant import AIAssistant
 from app.llm.domain.model.message import Message
 from app.llm.domain.model.vision import ImageContentItem, TextContentItem, TextVisionMessage
