@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from app.domain.models import ContentType
 from app.llm.domain.model.assistant import AIAssistant
 from app.llm.domain.model.role import Role
+from app.llm.domain.model.vision import ContentType
 
 
 @dataclass

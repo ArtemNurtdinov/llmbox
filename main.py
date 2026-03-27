@@ -6,8 +6,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.bootstrap import load_config
-from app.composition.logging_bootstrap import setup_logging
+from app.bootstrap import load_config, setup_logging
 from app.presentation.api import routes as ai_routes
 
 load_dotenv()
@@ -16,13 +15,7 @@ setup_logging(config.logging)
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(
-    title="LLMBox",
-    description="API для работы с LLM",
-    version="1.0.0",
-    docs_url="/docs",
-    openapi_url="/docs/openapi.json"
-)
+app = FastAPI(title="LLMBox", description="API для работы с LLM", version="1.0.0", docs_url="/docs", openapi_url="/docs/openapi.json")
 
 
 @app.middleware("http")

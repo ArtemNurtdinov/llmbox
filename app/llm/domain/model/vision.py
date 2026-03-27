@@ -23,19 +23,6 @@ class ImageContentItem:
 
 
 @dataclass
-class AIMessage:
+class TextVisionMessage:
     role: Role
     content: list[TextContentItem | ImageContentItem]
-
-
-@dataclass
-class Usage:
-    prompt_tokens: int
-    completion_tokens: int
-    total_tokens: int
-
-
-@dataclass
-class AIResponse:
-    assistant_message: str
-    usage: Usage

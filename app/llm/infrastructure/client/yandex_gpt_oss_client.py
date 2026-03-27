@@ -7,15 +7,16 @@ from openai.types.chat import (
     ChatCompletionUserMessageParam,
 )
 
-from app.domain.interfaces import TextModelClient
-from app.domain.models import AIResponse, Usage
+from app.llm.domain.client.text import TextClient
+from app.llm.domain.model.ai_message import AIMessage
 from app.llm.domain.model.message import Message
 from app.llm.domain.model.role import Role
+from app.llm.domain.model.usage import Usage
 
 logger = logging.getLogger(__name__)
 
 
-class YandexGPTOssClient(TextModelClient):
+class YandexGPTOssClient(TextClient):
     def __init__(self, model_name: str, model_path: str, api_key: str, base_url: str):
         if not model_name or not model_path or not api_key or not base_url:
             raise ValueError("Yandex GPT OSS model_name, model_path, api_key and base_url are required")
@@ -23,7 +24,7 @@ class YandexGPTOssClient(TextModelClient):
         self._model_path = model_path
         self.open_ai = AsyncOpenAI(api_key=api_key, base_url=base_url)
 
-    async def generate(self, user_messages: list[Message]) -> AIResponse:
+    async def generate(self, user_messages: list[Message]) -> AIMessage:
         messages = []
 
         for message in user_messages:
@@ -51,4 +52,4 @@ class YandexGPTOssClient(TextModelClient):
         logger.info("OpenAI-compatible response received")
 
         usage_model = Usage(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens, total_tokens=total_tokens)
-        return AIResponse(assistant_message=assistant_message, usage=usage_model)
+        return AIMessage(content=assistant_message, usage=usage_model)

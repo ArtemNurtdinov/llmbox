@@ -2,22 +2,17 @@ import logging
 
 import httpx
 
-from app.domain.interfaces import TextModelClient
-from app.domain.models import AIResponse, Usage
-from app.infrastructure.clients.yandex_auth import YandexAuth
+from app.llm.domain.client.text import TextClient
+from app.llm.domain.model.ai_message import AIMessage
 from app.llm.domain.model.message import Message
+from app.llm.domain.model.usage import Usage
+from app.llm.infrastructure.client.auth.yandex_auth import YandexAuth
 
 logger = logging.getLogger(__name__)
 
 
-class YandexGPTClient(TextModelClient):
-    def __init__(
-        self,
-        api_url: str,
-        model_path: str,
-        model_name: str,
-        auth: YandexAuth,
-    ):
+class YandexGPTClient(TextClient):
+    def __init__(self, api_url: str, model_path: str, model_name: str, auth: YandexAuth):
         if not api_url or not model_path or not model_name:
             raise ValueError("Yandex GPT api_url, model_path and model_name are required")
         self._api_url = api_url
@@ -25,7 +20,7 @@ class YandexGPTClient(TextModelClient):
         self.model_name = model_name
         self.auth = auth
 
-    async def generate(self, user_messages: list[Message]) -> AIResponse:
+    async def generate(self, user_messages: list[Message]) -> AIMessage:
         model_uri = f"{self._model_path}{self.model_name}"
         data = {
             "modelUri": model_uri,
@@ -63,4 +58,4 @@ class YandexGPTClient(TextModelClient):
             completion_tokens=int(usage_raw["completionTokens"]),
             total_tokens=int(usage_raw["totalTokens"]),
         )
-        return AIResponse(assistant_message=assistant_message, usage=usage)
+        return AIMessage(content=assistant_message, usage=usage)

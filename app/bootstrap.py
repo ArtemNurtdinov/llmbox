@@ -1,20 +1,25 @@
+import logging
 from functools import lru_cache
+from logging.handlers import TimedRotatingFileHandler
 
 from app.config.domain.config_repository import ConfigRepository
 from app.config.domain.config_source import ConfigSource
 from app.config.domain.model.configuration import Config
+from app.config.domain.model.logging import LoggingConfig
 from app.config.infrastructure.config_repository import ConfigRepositoryImpl
 from app.config.infrastructure.config_source import EnvConfigSource
 from app.config.validation.application.config_validator import AppConfigValidator
 from app.config.validation.domain.config_validator import ConfigValidator
-from app.domain.interfaces import TextModelClient, VisionModelClient
-from app.infrastructure.clients.openai_client import OpenAIClient
-from app.infrastructure.clients.yandex_auth import YandexAuth
-from app.infrastructure.clients.yandex_gpt_client import YandexGPTClient
-from app.infrastructure.clients.yandex_gpt_oss_client import YandexGPTOssClient
 from app.llm.application.usecase.generate_text_ai_use_case import GenerateTextAIUseCase
 from app.llm.application.usecase.generate_vision_ai_use_case import GenerateVisionAIUseCase
-from app.llm.domain.model.assistant import AIAssistant
+from app.llm.domain.llm_repository import LLMRepository
+from app.llm.domain.llm_vision_repository import LLMVisionRepository
+from app.llm.infrastructure.client.auth.yandex_auth import YandexAuth
+from app.llm.infrastructure.client.openai_client import OpenAIClient
+from app.llm.infrastructure.client.yandex_gpt_client import YandexGPTClient
+from app.llm.infrastructure.client.yandex_gpt_oss_client import YandexGPTOssClient
+from app.llm.infrastructure.llm_repository import LLMRepositoryImpl
+from app.llm.infrastructure.llm_vision_repository import LLMVisionRepositoryImpl
 
 
 @lru_cache
@@ -58,15 +63,15 @@ def build_generate_text_ai_use_case(config: Config) -> GenerateTextAIUseCase:
         base_url=config.yandex.open_ai_base_url,
     )
 
-    text_clients: dict[AIAssistant, TextModelClient] = {
-        AIAssistant.CHAT_GPT: openai_client,
-        AIAssistant.YANDEX_GPT: yandex_gpt_client,
-        AIAssistant.GPT_OSS_20B: yandex_gpt_oss_20b,
-        AIAssistant.GPT_OSS_120B: yandex_gpt_oss_120b,
-        AIAssistant.QWEN3_235B: yandex_qwen_235b,
-    }
+    llm_repository: LLMRepository = LLMRepositoryImpl(
+        chat_gpt_client=openai_client,
+        yandex_gpt_client=yandex_gpt_client,
+        qwen_client=yandex_qwen_235b,
+        yandex_gpt_oss_120b_client=yandex_gpt_oss_120b,
+        yandex_gpt_oss_20b_client=yandex_gpt_oss_20b,
+    )
 
-    return GenerateTextAIUseCase(text_clients=text_clients)
+    return GenerateTextAIUseCase(llm_repository)
 
 
 @lru_cache
@@ -77,11 +82,37 @@ def get_generate_text_ai_use_case() -> GenerateTextAIUseCase:
 
 def build_generate_vision_ai_use_case(config: Config) -> GenerateVisionAIUseCase:
     openai_client = OpenAIClient(model=config.open_ai.model, api_key=config.open_ai.api_key)
-    vision_client: VisionModelClient = openai_client
-    return GenerateVisionAIUseCase(vision_client=vision_client)
+    llm_vision_repository: LLMVisionRepository = LLMVisionRepositoryImpl(openai_client)
+    return GenerateVisionAIUseCase(llm_vision_repository=llm_vision_repository)
 
 
 @lru_cache
 def get_generate_vision_ai_use_case() -> GenerateVisionAIUseCase:
     config = load_config()
     return build_generate_vision_ai_use_case(config)
+
+
+def setup_logging(config: LoggingConfig) -> None:
+    root_logger = logging.getLogger()
+    root_logger.setLevel(config.level)
+    root_logger.handlers.clear()
+
+    file_handler = TimedRotatingFileHandler(
+        filename=config.file,
+        when="H",
+        interval=8,
+        backupCount=2,
+        utc=False,
+        encoding="utf-8",
+    )
+    file_handler.setLevel(config.level)
+    file_formatter = logging.Formatter(config.format)
+    file_handler.setFormatter(file_formatter)
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(config.level)
+    console_formatter = logging.Formatter(config.format)
+    console_handler.setFormatter(console_formatter)
+
+    root_logger.addHandler(file_handler)
+    root_logger.addHandler(console_handler)

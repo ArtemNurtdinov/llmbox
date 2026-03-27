@@ -7,9 +7,9 @@ from app.application.dto import (
     MessageDTO,
     TextContentItemDTO,
 )
-from app.domain.models import ContentType
 from app.llm.domain.model.assistant import AIAssistant
 from app.llm.domain.model.role import Role
+from app.llm.domain.model.vision import ContentType
 from app.presentation.api.schemas import (
     AIMessageSchema,
     AIResponseSchema,

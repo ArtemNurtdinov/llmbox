@@ -1,5 +1,6 @@
 from app.application.dto import AIResponseDTO, UsageDTO
-from app.domain.models import AIResponse, Usage
+from app.llm.domain.model.ai_message import AIMessage
+from app.llm.domain.model.usage import Usage
 
 
 def to_usage_dto(usage: Usage) -> UsageDTO:
@@ -10,9 +11,8 @@ def to_usage_dto(usage: Usage) -> UsageDTO:
     )
 
 
-def to_ai_response_dto(response: AIResponse) -> AIResponseDTO:
+def to_ai_response_dto(message: AIMessage) -> AIResponseDTO:
     return AIResponseDTO(
-        assistant_message=response.assistant_message,
-        usage=to_usage_dto(response.usage),
+        assistant_message=message.content,
+        usage=to_usage_dto(message.usage),
     )
-

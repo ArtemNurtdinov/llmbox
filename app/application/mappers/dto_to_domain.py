@@ -7,20 +7,16 @@ from app.application.dto import (
     TextContentItemDTO,
 )
 from app.application.exceptions import ValidationException
-from app.domain.models import (
-    AIMessage,
-    ImageContentItem,
-    TextContentItem,
-)
 from app.llm.domain.model.assistant import AIAssistant
 from app.llm.domain.model.message import Message
+from app.llm.domain.model.vision import ImageContentItem, TextContentItem, TextVisionMessage
 
 
 def to_domain_message(dto: MessageDTO) -> Message:
     return Message(role=dto.role, content=dto.content)
 
 
-def to_domain_ai_message(dto: AIMessageDTO) -> AIMessage:
+def to_domain_ai_message(dto: AIMessageDTO) -> TextVisionMessage:
     content_items = []
     for item in dto.content:
         if isinstance(item, TextContentItemDTO):
@@ -30,7 +26,7 @@ def to_domain_ai_message(dto: AIMessageDTO) -> AIMessage:
         else:
             raise ValidationException(f"Unknown content item type: {type(item)}")
 
-    return AIMessage(role=dto.role, content=content_items)
+    return TextVisionMessage(role=dto.role, content=content_items)
 
 
 def to_domain_messages_from_dto(dto: GenerateAIRequestDTO) -> tuple[list[Message], AIAssistant]:
@@ -38,5 +34,5 @@ def to_domain_messages_from_dto(dto: GenerateAIRequestDTO) -> tuple[list[Message
     return messages, dto.assistant
 
 
-def to_domain_ai_messages_from_dto(dto: GenerateVisionAIRequestDTO) -> list[AIMessage]:
+def to_domain_ai_messages_from_dto(dto: GenerateVisionAIRequestDTO) -> list[TextVisionMessage]:
     return [to_domain_ai_message(msg) for msg in dto.messages]

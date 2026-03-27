@@ -3,26 +3,28 @@ import logging
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionAssistantMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
 
-from app.domain.interfaces import TextModelClient, VisionModelClient
-from app.domain.models import AIMessage, AIResponse, ImageContentItem, TextContentItem, Usage
+from app.llm.domain.client.vision import TextWithVisionClient
+from app.llm.domain.model.ai_message import AIMessage
 from app.llm.domain.model.message import Message
 from app.llm.domain.model.role import Role
+from app.llm.domain.model.usage import Usage
+from app.llm.domain.model.vision import ImageContentItem, TextContentItem, TextVisionMessage
 
 logger = logging.getLogger(__name__)
 
 
-class OpenAIClient(TextModelClient, VisionModelClient):
+class OpenAIClient(TextWithVisionClient):
     def __init__(self, model: str, api_key: str):
         if not model or not api_key:
             raise ValueError("OpenAI model and api_key are required")
         self._model = model
         self._client = AsyncOpenAI(api_key=api_key)
 
-    async def generate(self, user_messages: list[Message]) -> AIResponse:
+    async def generate(self, user_messages: list[Message]) -> AIMessage:
         return await self._generate_text(user_messages)
 
     @staticmethod
-    def _serialize_message(msg: AIMessage) -> dict:
+    def _serialize_message(msg: TextVisionMessage) -> dict:
         content_items = []
         for item in msg.content:
             if isinstance(item, TextContentItem):
@@ -31,7 +33,7 @@ class OpenAIClient(TextModelClient, VisionModelClient):
                 content_items.append({"type": "image_url", "image_url": {"url": item.image_base64}})
         return {"role": msg.role.value, "content": content_items}
 
-    async def _generate_text(self, user_messages: list[Message]) -> AIResponse:
+    async def _generate_text(self, user_messages: list[Message]) -> AIMessage:
         messages = []
 
         for message in user_messages:
@@ -50,9 +52,9 @@ class OpenAIClient(TextModelClient, VisionModelClient):
         total_tokens = completion.usage.total_tokens
 
         usage_model = Usage(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens, total_tokens=total_tokens)
-        return AIResponse(assistant_message=assistant_message, usage=usage_model)
+        return AIMessage(content=assistant_message, usage=usage_model)
 
-    async def generate_vision(self, user_messages: list[AIMessage]) -> AIResponse:
+    async def generate_vision(self, user_messages: list[TextVisionMessage]) -> AIMessage:
         messages = [self._serialize_message(msg) for msg in user_messages]
 
         response = await self._client.chat.completions.create(model=self._model, messages=messages)
@@ -67,4 +69,4 @@ class OpenAIClient(TextModelClient, VisionModelClient):
 
         logger.info("OpenAI Vision API response received")
 
-        return AIResponse(assistant_message=content, usage=usage)
+        return AIMessage(content=content, usage=usage)
