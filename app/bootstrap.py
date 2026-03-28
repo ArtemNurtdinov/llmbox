@@ -24,7 +24,8 @@ from app.llm.infrastructure.llm_vision_repository import LLMVisionRepositoryImpl
 
 @lru_cache
 def get_logger() -> Logger:
-    return LoggerImpl("bootstrap")
+    config = load_config()
+    return LoggerImpl("bootstrap", config.logging)
 
 
 def get_config_source() -> ConfigSource:
