@@ -32,38 +32,71 @@ def load_config() -> Config:
     return config
 
 
-def build_generate_text_ai_use_case(config: Config) -> GenerateTextAIUseCase:
-    openai_client = OpenAIClient(model=config.open_ai.model, api_key=config.open_ai.api_key)
-    yandex_auth = YandexAuth(
+@lru_cache
+def get_open_ai_client() -> OpenAIClient:
+    config = load_config()
+    return OpenAIClient(model=config.open_ai.model, api_key=config.open_ai.api_key)
+
+
+@lru_cache
+def get_yandex_auth() -> YandexAuth:
+    config = load_config()
+    return YandexAuth(
         key_id=config.yandex.key_id, service_account_id=config.yandex.service_account_id, private_key=config.yandex.private_key
     )
-    yandex_gpt_client = YandexGPTClient(
+
+
+@lru_cache
+def get_yandex_gpt_client() -> YandexGPTClient:
+    config = load_config()
+    auth = get_yandex_auth()
+    return YandexGPTClient(
         api_url=config.yandex.yandex_gpt_api_url,
         model_path=config.yandex.yandex_gpt_model_path,
         model_name=config.yandex.yandex_gpt_model_name,
-        auth=yandex_auth,
+        auth=auth,
     )
 
-    yandex_gpt_oss_20b = YandexGPTOssClient(
+
+@lru_cache
+def get_gpt_oss_20_client() -> YandexGPTOssClient:
+    config = load_config()
+    return YandexGPTOssClient(
         model_name=config.yandex.gpt_oss_20b_model_name,
         model_path=config.yandex.yandex_gpt_model_path,
         api_key=config.yandex.open_ai_api_key,
         base_url=config.yandex.open_ai_base_url,
     )
 
-    yandex_gpt_oss_120b = YandexGPTOssClient(
+
+@lru_cache
+def get_gpt_oss_120_client() -> YandexGPTOssClient:
+    config = load_config()
+    return YandexGPTOssClient(
         model_name=config.yandex.gpt_oss_120b_model_name,
         model_path=config.yandex.yandex_gpt_model_path,
         api_key=config.yandex.open_ai_api_key,
         base_url=config.yandex.open_ai_base_url,
     )
 
-    yandex_qwen_235b = YandexGPTOssClient(
+
+@lru_cache
+def get_qwen_client() -> YandexGPTOssClient:
+    config = load_config()
+    return YandexGPTOssClient(
         model_name=config.yandex.qwen_235b_model_name,
         model_path=config.yandex.yandex_gpt_model_path,
         api_key=config.yandex.open_ai_api_key,
         base_url=config.yandex.open_ai_base_url,
     )
+
+
+def get_llm_repository() -> LLMRepository:
+    openai_client = get_open_ai_client()
+    yandex_gpt_client = get_yandex_gpt_client()
+    yandex_gpt_oss_20b = get_gpt_oss_20_client()
+    yandex_gpt_oss_120b = get_gpt_oss_120_client()
+    yandex_qwen_235b = get_qwen_client()
 
     llm_repository: LLMRepository = LLMRepositoryImpl(
         chat_gpt_client=openai_client,
@@ -72,26 +105,24 @@ def build_generate_text_ai_use_case(config: Config) -> GenerateTextAIUseCase:
         yandex_gpt_oss_120b_client=yandex_gpt_oss_120b,
         yandex_gpt_oss_20b_client=yandex_gpt_oss_20b,
     )
+    return llm_repository
+
+
+def get_generate_text_ai_use_case() -> GenerateTextAIUseCase:
+    llm_repository: LLMRepository = get_llm_repository()
 
     return GenerateTextAIUseCase(llm_repository=llm_repository, ai_message_mapper=AIMessageMapper())
 
 
-@lru_cache
-def get_generate_text_ai_use_case() -> GenerateTextAIUseCase:
-    config = load_config()
-    return build_generate_text_ai_use_case(config)
-
-
-def build_generate_vision_ai_use_case(config: Config) -> GenerateVisionAIUseCase:
-    openai_client = OpenAIClient(model=config.open_ai.model, api_key=config.open_ai.api_key)
+def get_llm_vision_repository() -> LLMVisionRepository:
+    openai_client = get_open_ai_client()
     llm_vision_repository: LLMVisionRepository = LLMVisionRepositoryImpl(openai_client)
-    return GenerateVisionAIUseCase(llm_vision_repository=llm_vision_repository, ai_message_mapper=AIMessageMapper())
+    return llm_vision_repository
 
 
-@lru_cache
 def get_generate_vision_ai_use_case() -> GenerateVisionAIUseCase:
-    config = load_config()
-    return build_generate_vision_ai_use_case(config)
+    llm_vision_repository: LLMVisionRepository = get_llm_vision_repository()
+    return GenerateVisionAIUseCase(llm_vision_repository=llm_vision_repository, ai_message_mapper=AIMessageMapper())
 
 
 def setup_logging(config: LoggingConfig) -> None:
