@@ -7,6 +7,7 @@ from app.config.domain.model.configuration import Config
 from app.config.infrastructure.config_repository import ConfigRepositoryImpl
 from app.config.infrastructure.config_source import EnvConfigSource
 from app.config.validation.application.usecase.validate_config_use_case import ValidateConfigUseCase
+from app.core.logger.domain.logger import Logger
 from app.core.logger.infrastructure.logger import LoggerImpl
 from app.llm.application.mapper.ai_message_mapper import AIMessageMapper
 from app.llm.application.usecase.generate_text_ai_use_case import GenerateTextAIUseCase
@@ -19,6 +20,10 @@ from app.llm.infrastructure.client.yandex_gpt_client import YandexGPTClient
 from app.llm.infrastructure.client.yandex_gpt_oss_client import YandexGPTOssClient
 from app.llm.infrastructure.llm_repository import LLMRepositoryImpl
 from app.llm.infrastructure.llm_vision_repository import LLMVisionRepositoryImpl
+
+
+def get_logger() -> Logger:
+    return LoggerImpl("bootstrap")
 
 
 def get_config_source() -> ConfigSource:
@@ -53,7 +58,7 @@ def get_yandex_auth() -> YandexAuth:
         key_id=config.yandex.key_id,
         service_account_id=config.yandex.service_account_id,
         private_key=config.yandex.private_key,
-        logger=LoggerImpl("bootstrap"),
+        logger=get_logger(),
     )
 
 
@@ -70,6 +75,7 @@ def get_yandex_gpt_client() -> YandexGPTClient:
         model_path=config.yandex.yandex_gpt_model_path,
         model_name=config.yandex.yandex_gpt_model_name,
         auth=auth,
+        logger=get_logger(),
     )
 
 
