@@ -10,8 +10,6 @@ from app.bootstrap import load_config, setup_logging
 from app.llm.infrastructure import routes as ai_routes
 
 load_dotenv()
-config = load_config()
-setup_logging(config.logging)
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +45,9 @@ app.include_router(ai_routes.router)
 logger.info("FastAPI application started successfully")
 
 if __name__ == "__main__":
+    config = load_config()
+    setup_logging(config.logging)
+
     host = config.application.host
     port = config.application.port
 

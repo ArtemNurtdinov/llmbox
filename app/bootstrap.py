@@ -28,7 +28,7 @@ def get_config_source() -> ConfigSource:
 
 
 def get_config_repository() -> ConfigRepository:
-    source = get_config_source()
+    source: ConfigSource = get_config_source()
     return ConfigRepositoryImpl(source)
 
 
@@ -42,8 +42,9 @@ def get_load_configuration_use_case() -> LoadConfigurationUseCase:
     return LoadConfigurationUseCase(config_repository, validate_config_use_case)
 
 
+@lru_cache
 def load_config() -> Config:
-    load_configuration_use_case = get_load_configuration_use_case()
+    load_configuration_use_case: LoadConfigurationUseCase = get_load_configuration_use_case()
     return load_configuration_use_case.execute()
 
 
