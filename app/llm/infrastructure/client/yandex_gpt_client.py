@@ -1,18 +1,16 @@
-import logging
-
 import httpx
 
+from app.core.logger.domain.logger import Logger
 from app.llm.domain.client.text import TextClient
 from app.llm.domain.model.ai_message import AIMessage
 from app.llm.domain.model.message import Message
 from app.llm.domain.model.usage import Usage
 from app.llm.infrastructure.client.auth.yandex_auth import YandexAuth
 
-logger = logging.getLogger(__name__)
-
 
 class YandexGPTClient(TextClient):
-    def __init__(self, api_url: str, model_path: str, model_name: str, auth: YandexAuth):
+    def __init__(self, api_url: str, model_path: str, model_name: str, auth: YandexAuth, logger: Logger):
+        self._logger = logger.create_child("YandexGPTClient")
         if not api_url or not model_path or not model_name:
             raise ValueError("Yandex GPT api_url, model_path and model_name are required")
         self._api_url = api_url
@@ -44,11 +42,11 @@ class YandexGPTClient(TextClient):
 
         if response.status_code != 200:
             error_text = response.text
-            logger.error("Yandex GPT API error: status=%s, response=%s", response.status_code, error_text)
+            self._logger.log_error(f"Yandex GPT API error: status=%{response.status_code}, response=%{error_text}")
             raise Exception(f"Yandex GPT API error: {response.status_code} - {error_text}")
 
         response_json = response.json()
-        logger.debug("Yandex GPT response JSON: %s", response_json)
+        self._logger.log_debug(f"Yandex GPT response JSON: {response_json}")
 
         assistant_message = response_json["result"]["alternatives"][0]["message"]["text"]
         usage_raw = response_json["result"]["usage"]

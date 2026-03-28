@@ -91,7 +91,7 @@ class YandexAuth:
 
             self.jwt_expires_at = expires_at
 
-            self._logger.log_debug("JWT token created, expires at %s", expires_at)
+            self._logger.log_debug(f"JWT token created, expires at %{expires_at}")
             return encoded_token
 
         except Exception as exc:

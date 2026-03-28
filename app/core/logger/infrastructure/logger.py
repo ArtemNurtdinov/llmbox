@@ -7,7 +7,7 @@ class LoggerImpl(Logger):
     def __init__(self, tag: str):
         self._app_logger = logging.getLogger(tag)
 
-    def log_debug(self, message: str, *args, **kwargs):
+    def log_debug(self, message: str):
         self._app_logger.debug(message)
 
     def log_info(self, message: str):
