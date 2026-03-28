@@ -13,7 +13,7 @@ app = FastAPI(title="LLMBox", description="API для работы с LLM", vers
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    logger.log_error(f"GLOBAL EXCEPTION: {request.method} {request.url} - {str(exc)}")
+    get_logger().log_error(f"GLOBAL EXCEPTION: {request.method} {request.url} - {str(exc)}")
     return JSONResponse(status_code=500, content={"detail": "Internal server error", "error": str(exc)})
 
 
