@@ -2,6 +2,7 @@ import logging
 from functools import lru_cache
 from logging.handlers import TimedRotatingFileHandler
 
+from app.config.application.load_configuration_use_case import LoadConfigurationUseCase
 from app.config.domain.config_repository import ConfigRepository
 from app.config.domain.config_source import ConfigSource
 from app.config.domain.model.configuration import Config
@@ -22,14 +23,28 @@ from app.llm.infrastructure.llm_repository import LLMRepositoryImpl
 from app.llm.infrastructure.llm_vision_repository import LLMVisionRepositoryImpl
 
 
-@lru_cache
+def get_config_source() -> ConfigSource:
+    return EnvConfigSource()
+
+
+def get_config_repository() -> ConfigRepository:
+    source = get_config_source()
+    return ConfigRepositoryImpl(source)
+
+
+def get_validate_config_use_case() -> ValidateConfigUseCase:
+    return ValidateConfigUseCase()
+
+
+def get_load_configuration_use_case() -> LoadConfigurationUseCase:
+    config_repository: ConfigRepository = get_config_repository()
+    validate_config_use_case: ValidateConfigUseCase = get_validate_config_use_case()
+    return LoadConfigurationUseCase(config_repository, validate_config_use_case)
+
+
 def load_config() -> Config:
-    config_source: ConfigSource = EnvConfigSource()
-    repository: ConfigRepository = ConfigRepositoryImpl(config_source)
-    config = repository.get_config()
-    validate_config_use_case = ValidateConfigUseCase()
-    validate_config_use_case.validate(config)
-    return config
+    load_configuration_use_case = get_load_configuration_use_case()
+    return load_configuration_use_case.execute()
 
 
 @lru_cache
