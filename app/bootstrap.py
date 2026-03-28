@@ -33,12 +33,6 @@ def load_config() -> Config:
 
 
 @lru_cache
-def get_open_ai_client() -> OpenAIClient:
-    config = load_config()
-    return OpenAIClient(model=config.open_ai.model, api_key=config.open_ai.api_key)
-
-
-@lru_cache
 def get_yandex_auth() -> YandexAuth:
     config = load_config()
     return YandexAuth(
@@ -46,7 +40,11 @@ def get_yandex_auth() -> YandexAuth:
     )
 
 
-@lru_cache
+def get_open_ai_client() -> OpenAIClient:
+    config = load_config()
+    return OpenAIClient(model=config.open_ai.model, api_key=config.open_ai.api_key)
+
+
 def get_yandex_gpt_client() -> YandexGPTClient:
     config = load_config()
     auth = get_yandex_auth()
@@ -58,7 +56,6 @@ def get_yandex_gpt_client() -> YandexGPTClient:
     )
 
 
-@lru_cache
 def get_gpt_oss_20_client() -> YandexGPTOssClient:
     config = load_config()
     return YandexGPTOssClient(
@@ -69,7 +66,6 @@ def get_gpt_oss_20_client() -> YandexGPTOssClient:
     )
 
 
-@lru_cache
 def get_gpt_oss_120_client() -> YandexGPTOssClient:
     config = load_config()
     return YandexGPTOssClient(
@@ -80,7 +76,6 @@ def get_gpt_oss_120_client() -> YandexGPTOssClient:
     )
 
 
-@lru_cache
 def get_qwen_client() -> YandexGPTOssClient:
     config = load_config()
     return YandexGPTOssClient(
