@@ -8,8 +8,7 @@ from app.config.domain.model.configuration import Config
 from app.config.domain.model.logging import LoggingConfig
 from app.config.infrastructure.config_repository import ConfigRepositoryImpl
 from app.config.infrastructure.config_source import EnvConfigSource
-from app.config.validation.application.config_validator import AppConfigValidator
-from app.config.validation.domain.config_validator import ConfigValidator
+from app.config.validation.application.usecase.validate_config_use_case import ValidateConfigUseCase
 from app.llm.application.mapper.ai_message_mapper import AIMessageMapper
 from app.llm.application.usecase.generate_text_ai_use_case import GenerateTextAIUseCase
 from app.llm.application.usecase.generate_vision_ai_use_case import GenerateVisionAIUseCase
@@ -26,9 +25,11 @@ from app.llm.infrastructure.llm_vision_repository import LLMVisionRepositoryImpl
 @lru_cache
 def load_config() -> Config:
     config_source: ConfigSource = EnvConfigSource()
-    config_validator: ConfigValidator = AppConfigValidator()
-    repository: ConfigRepository = ConfigRepositoryImpl(config_source, config_validator)
-    return repository.get_config()
+    repository: ConfigRepository = ConfigRepositoryImpl(config_source)
+    config = repository.get_config()
+    validate_config_use_case = ValidateConfigUseCase()
+    validate_config_use_case.validate(config)
+    return config
 
 
 def build_generate_text_ai_use_case(config: Config) -> GenerateTextAIUseCase:

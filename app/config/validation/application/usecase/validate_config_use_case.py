@@ -1,9 +1,8 @@
 from app.config.domain.model.configuration import Config
 from app.config.validation.application.exception.validation import ConfigurationException
-from app.config.validation.domain.config_validator import ConfigValidator
 
 
-class AppConfigValidator(ConfigValidator):
+class ValidateConfigUseCase:
     def validate(self, config: Config) -> None:
         missing: list[str] = []
 

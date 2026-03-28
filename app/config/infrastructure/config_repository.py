@@ -5,20 +5,13 @@ from app.config.domain.model.configuration import Config
 from app.config.domain.model.logging import LoggingConfig
 from app.config.domain.model.open_ai import OpenAIConfig
 from app.config.domain.model.yandex import YandexConfig
-from app.config.validation.domain.config_validator import ConfigValidator
 
 
 class ConfigRepositoryImpl(ConfigRepository):
-    def __init__(self, source: ConfigSource, validator: ConfigValidator):
+    def __init__(self, source: ConfigSource):
         self._source = source
-        self._validator = validator
 
     def get_config(self) -> Config:
-        config = self._load_config_from_env()
-        self._validator.validate(config)
-        return config
-
-    def _load_config_from_env(self) -> Config:
         return Config(
             application=ApplicationConfig(
                 host=self._source.get("HOST", "0.0.0.0"),
