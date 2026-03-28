@@ -1,5 +1,3 @@
-import logging
-
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
@@ -10,14 +8,12 @@ from app.llm.infrastructure import routes as ai_routes
 
 load_dotenv()
 
-logger = logging.getLogger(__name__)
-
 app = FastAPI(title="LLMBox", description="API для работы с LLM", version="1.0.0", docs_url="/docs", openapi_url="/docs/openapi.json")
 
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    logger.error(f"GLOBAL EXCEPTION: {request.method} {request.url} - {str(exc)}", exc_info=True)
+    logger.log_error(f"GLOBAL EXCEPTION: {request.method} {request.url} - {str(exc)}")
     return JSONResponse(status_code=500, content={"detail": "Internal server error", "error": str(exc)})
 
 
