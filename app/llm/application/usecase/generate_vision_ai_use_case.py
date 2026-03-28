@@ -1,4 +1,4 @@
-from app.application.exceptions import ServiceUnavailableException
+from app.llm.application.exception.unavailable_service import ServiceUnavailableException
 from app.llm.application.mapper.ai_message_mapper import AIMessageMapper
 from app.llm.application.model.request.vision import GenerateVisionAIRequestDTO
 from app.llm.application.model.response.generate import AIResponseDTO
