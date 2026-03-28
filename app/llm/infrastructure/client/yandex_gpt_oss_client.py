@@ -1,5 +1,3 @@
-import logging
-
 from openai import AsyncOpenAI
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
@@ -7,17 +5,17 @@ from openai.types.chat import (
     ChatCompletionUserMessageParam,
 )
 
+from app.core.logger.domain.logger import Logger
 from app.llm.domain.client.text import TextClient
 from app.llm.domain.model.ai_message import AIMessage
 from app.llm.domain.model.message import Message
 from app.llm.domain.model.role import Role
 from app.llm.domain.model.usage import Usage
 
-logger = logging.getLogger(__name__)
-
 
 class YandexGPTOssClient(TextClient):
-    def __init__(self, model_name: str, model_path: str, api_key: str, base_url: str):
+    def __init__(self, model_name: str, model_path: str, api_key: str, base_url: str, logger: Logger):
+        self._logger = logger.create_child("YandexGPTOssClient")
         if not model_name or not model_path or not api_key or not base_url:
             raise ValueError("Yandex GPT OSS model_name, model_path, api_key and base_url are required")
         self.model_name = model_name
@@ -35,7 +33,7 @@ class YandexGPTOssClient(TextClient):
             elif message.role == Role.ASSISTANT:
                 messages.append(ChatCompletionAssistantMessageParam(role=message.role.value, content=message.content))
 
-        logger.info("Sending request to OpenAI-compatible API")
+        self._logger.log_info("Sending request to OpenAI-compatible API")
         model = f"{self._model_path}{self.model_name}"
         completion = await self.open_ai.chat.completions.create(
             model=model,
@@ -49,7 +47,7 @@ class YandexGPTOssClient(TextClient):
         completion_tokens = completion.usage.completion_tokens
         total_tokens = completion.usage.total_tokens
 
-        logger.info("OpenAI-compatible response received")
+        self._logger.log_info("OpenAI-compatible response received")
 
         usage_model = Usage(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens, total_tokens=total_tokens)
         return AIMessage(content=assistant_message, usage=usage_model)

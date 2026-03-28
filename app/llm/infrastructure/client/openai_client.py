@@ -1,8 +1,7 @@
-import logging
-
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionAssistantMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
 
+from app.core.logger.domain.logger import Logger
 from app.llm.domain.client.vision import TextWithVisionClient
 from app.llm.domain.model.ai_message import AIMessage
 from app.llm.domain.model.message import Message
@@ -10,11 +9,10 @@ from app.llm.domain.model.role import Role
 from app.llm.domain.model.usage import Usage
 from app.llm.domain.model.vision import ImageContentItem, TextContentItem, TextVisionMessage
 
-logger = logging.getLogger(__name__)
-
 
 class OpenAIClient(TextWithVisionClient):
-    def __init__(self, model: str, api_key: str):
+    def __init__(self, model: str, api_key: str, logger: Logger):
+        self._logger = logger.create_child("OpenAIClient")
         if not model or not api_key:
             raise ValueError("OpenAI model and api_key are required")
         self._model = model
@@ -51,7 +49,6 @@ class OpenAIClient(TextWithVisionClient):
                 content_items.append({"type": "image_url", "image_url": {"url": item.image_base64}})
         return {"role": msg.role.value, "content": content_items}
 
-
     async def generate_vision(self, user_messages: list[TextVisionMessage]) -> AIMessage:
         messages = [self._serialize_message(msg) for msg in user_messages]
 
@@ -65,6 +62,6 @@ class OpenAIClient(TextWithVisionClient):
 
         content = response.choices[0].message.content
 
-        logger.info("OpenAI Vision API response received")
+        self._logger.log_info("OpenAI Vision API response received")
 
         return AIMessage(content=content, usage=usage)
