@@ -1,15 +1,13 @@
-import logging
 from functools import lru_cache
-from logging.handlers import TimedRotatingFileHandler
 
-from app.config.application.load_configuration_use_case import LoadConfigurationUseCase
+from app.config.application.usecase.load_configuration_use_case import LoadConfigurationUseCase
 from app.config.domain.config_repository import ConfigRepository
 from app.config.domain.config_source import ConfigSource
 from app.config.domain.model.configuration import Config
-from app.config.domain.model.logging import LoggingConfig
 from app.config.infrastructure.config_repository import ConfigRepositoryImpl
 from app.config.infrastructure.config_source import EnvConfigSource
 from app.config.validation.application.usecase.validate_config_use_case import ValidateConfigUseCase
+from app.core.logger.infrastructure.logger import LoggerImpl
 from app.llm.application.mapper.ai_message_mapper import AIMessageMapper
 from app.llm.application.usecase.generate_text_ai_use_case import GenerateTextAIUseCase
 from app.llm.application.usecase.generate_vision_ai_use_case import GenerateVisionAIUseCase
@@ -52,7 +50,10 @@ def load_config() -> Config:
 def get_yandex_auth() -> YandexAuth:
     config = load_config()
     return YandexAuth(
-        key_id=config.yandex.key_id, service_account_id=config.yandex.service_account_id, private_key=config.yandex.private_key
+        key_id=config.yandex.key_id,
+        service_account_id=config.yandex.service_account_id,
+        private_key=config.yandex.private_key,
+        logger=LoggerImpl("bootstrap"),
     )
 
 
@@ -134,29 +135,3 @@ def get_llm_vision_repository() -> LLMVisionRepository:
 def get_generate_vision_ai_use_case() -> GenerateVisionAIUseCase:
     llm_vision_repository: LLMVisionRepository = get_llm_vision_repository()
     return GenerateVisionAIUseCase(llm_vision_repository=llm_vision_repository, ai_message_mapper=AIMessageMapper())
-
-
-def setup_logging(config: LoggingConfig) -> None:
-    root_logger = logging.getLogger()
-    root_logger.setLevel(config.level)
-    root_logger.handlers.clear()
-
-    file_handler = TimedRotatingFileHandler(
-        filename=config.file,
-        when="H",
-        interval=8,
-        backupCount=2,
-        utc=False,
-        encoding="utf-8",
-    )
-    file_handler.setLevel(config.level)
-    file_formatter = logging.Formatter(config.format)
-    file_handler.setFormatter(file_formatter)
-
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(config.level)
-    console_formatter = logging.Formatter(config.format)
-    console_handler.setFormatter(console_formatter)
-
-    root_logger.addHandler(file_handler)
-    root_logger.addHandler(console_handler)

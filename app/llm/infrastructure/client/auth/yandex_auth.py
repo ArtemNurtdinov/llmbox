@@ -1,24 +1,23 @@
 import asyncio
-import logging
 import time
 
 import httpx
 import jwt
 
-logger = logging.getLogger(__name__)
+from app.core.logger.domain.logger import Logger
 
 
 class YandexAuth:
-    def __init__(self, key_id: str, service_account_id: str, private_key: str):
+    def __init__(self, key_id: str, service_account_id: str, private_key: str, logger: Logger):
+        self._logger = logger.create_child("YandexAuth")
         if not key_id or not service_account_id or not private_key:
             missing = []
             if not key_id:
-                missing.append("key_id")
+                self._logger.log_error("Missing required parameters: key_id")
             if not service_account_id:
-                missing.append("service_account_id")
+                self._logger.log_error("Missing required parameters: service_account_id")
             if not private_key:
-                missing.append("private_key")
-            logger.error("Missing required parameters: %s", missing)
+                self._logger.log_error("Missing required parameters: private_key")
             raise ValueError(f"Missing required parameters: {missing}")
 
         self._KEY_ID = key_id
@@ -29,7 +28,7 @@ class YandexAuth:
         self.iam_key = None
         self.iam_expires_at = 0
         self._iam_token_task = None
-        logger.info("Yandex Auth initialized")
+        self._logger.log_info("Yandex Auth initialized")
 
     @staticmethod
     def _normalize_private_key(key: str | None) -> str | None:
@@ -47,25 +46,25 @@ class YandexAuth:
     async def get_iam_key(self) -> str:
         try:
             if not self._is_jwt_valid():
-                logger.info("JWT token expired or missing, creating new one...")
+                self._logger.log_info("JWT token expired or missing, creating new one...")
                 self.jwt_token = self.create_jwt_token()
                 self.iam_key = None
                 self.iam_expires_at = 0
 
             if not self._is_iam_valid():
-                logger.info("IAM token expired or missing, creating new one...")
+                self._logger.log_info("IAM token expired or missing, creating new one...")
                 self.iam_key = await self.create_iam_token(self.jwt_token)
                 self.iam_expires_at = time.time() + 3600
 
                 if self._iam_token_task is None:
-                    logger.info("Starting IAM token refresh task...")
+                    self._logger.log_info("Starting IAM token refresh task...")
                     self._iam_token_task = asyncio.create_task(self.update_iam_token())
 
-            logger.debug("IAM key provided")
+            self._logger.log_debug("IAM key provided")
             return self.iam_key
 
         except Exception as exc:
-            logger.error("Error getting IAM key: %s", exc, exc_info=True)
+            self._logger.log_exception("Error getting IAM key: %s", exc)
             self.jwt_token = None
             self.jwt_expires_at = 0
             self.iam_key = None
@@ -74,7 +73,7 @@ class YandexAuth:
 
     def create_jwt_token(self) -> str:
         try:
-            logger.debug("Creating JWT token...")
+            self._logger.log_debug("Creating JWT token...")
             now = int(time.time())
             expires_at = now + 3600
             payload = {
@@ -92,24 +91,20 @@ class YandexAuth:
 
             self.jwt_expires_at = expires_at
 
-            logger.debug("JWT token created, expires at %s", expires_at)
+            self._logger.log_debug("JWT token created, expires at %s", expires_at)
             return encoded_token
 
         except Exception as exc:
-            logger.error("Error creating JWT token: %s", exc, exc_info=True)
+            self._logger.log_exception("Error creating JWT token: %s", exc)
             raise
 
     async def create_iam_token(self, jwt_token: str) -> str:
         try:
             iam_token_url = "https://iam.api.cloud.yandex.net/iam/v1/tokens"
 
-            headers = {
-                "Content-Type": "application/json"
-            }
+            headers = {"Content-Type": "application/json"}
 
-            data = {
-                "jwt": jwt_token
-            }
+            data = {"jwt": jwt_token}
 
             async with httpx.AsyncClient() as client:
                 response = await client.post(iam_token_url, json=data, headers=headers)
@@ -118,11 +113,11 @@ class YandexAuth:
                 result = response.json()["iamToken"]
                 return result
             error_text = response.text
-            logger.error("IAM token creation failed: status=%s, response=%s", response.status_code, error_text)
+            self._logger.log_error(f"IAM token creation failed: status=%{response.status_code}, response=%{error_text}")
             raise Exception(f"Ошибка при получении IAM-токена: {response.status_code} - {error_text}")
 
         except Exception as exc:
-            logger.error("Error creating IAM token: %s", exc, exc_info=True)
+            self._logger.log_exception("Error creating IAM token: %s", exc)
             raise
 
     async def update_iam_token(self):
@@ -133,9 +128,9 @@ class YandexAuth:
                     self.jwt_token = self.create_jwt_token()
                     self.iam_key = await self.create_iam_token(self.jwt_token)
                     self.iam_expires_at = time.time() + 3600
-                    logger.info("Tokens refreshed successfully")
+                    self._logger.log_info("Tokens refreshed successfully")
                 except Exception as exc:
-                    logger.error("Error refreshing tokens: %s", exc, exc_info=True)
+                    self._logger.log_exception("Error refreshing tokens: %s", exc)
                     self.jwt_token = None
                     self.jwt_expires_at = 0
                     self.iam_key = None
@@ -143,5 +138,5 @@ class YandexAuth:
                 await asyncio.sleep(3000)
 
         except Exception as exc:
-            logger.error("Token refresh task crashed: %s", exc, exc_info=True)
+            self._logger.log_exception("Token refresh task crashed: %s", exc)
             self._iam_token_task = None
