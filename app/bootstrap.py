@@ -22,6 +22,7 @@ from app.llm.infrastructure.llm_repository import LLMRepositoryImpl
 from app.llm.infrastructure.llm_vision_repository import LLMVisionRepositoryImpl
 
 
+@lru_cache
 def get_logger() -> Logger:
     return LoggerImpl("bootstrap")
 
@@ -64,7 +65,7 @@ def get_yandex_auth() -> YandexAuth:
 
 def get_open_ai_client() -> OpenAIClient:
     config = load_config()
-    return OpenAIClient(model=config.open_ai.model, api_key=config.open_ai.api_key)
+    return OpenAIClient(model=config.open_ai.model, api_key=config.open_ai.api_key, logger=get_logger())
 
 
 def get_yandex_gpt_client() -> YandexGPTClient:
@@ -86,6 +87,7 @@ def get_gpt_oss_20_client() -> YandexGPTOssClient:
         model_path=config.yandex.yandex_gpt_model_path,
         api_key=config.yandex.open_ai_api_key,
         base_url=config.yandex.open_ai_base_url,
+        logger=get_logger(),
     )
 
 
@@ -96,6 +98,7 @@ def get_gpt_oss_120_client() -> YandexGPTOssClient:
         model_path=config.yandex.yandex_gpt_model_path,
         api_key=config.yandex.open_ai_api_key,
         base_url=config.yandex.open_ai_base_url,
+        logger=get_logger(),
     )
 
 
@@ -106,6 +109,7 @@ def get_qwen_client() -> YandexGPTOssClient:
         model_path=config.yandex.yandex_gpt_model_path,
         api_key=config.yandex.open_ai_api_key,
         base_url=config.yandex.open_ai_base_url,
+        logger=get_logger(),
     )
 
 
