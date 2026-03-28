@@ -1,4 +1,4 @@
-from app.application.dto import AIResponseDTO, UsageDTO
+from app.llm.application.model.response.generate import AIResponseDTO, UsageDTO
 from app.llm.domain.model.ai_message import AIMessage
 from app.llm.domain.model.usage import Usage
 

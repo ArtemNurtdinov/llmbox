@@ -1,8 +1,8 @@
-from app.application.dto import AIResponseDTO
 from app.application.exceptions import ServiceUnavailableException
 from app.application.mappers.dto_to_domain import to_domain_ai_messages_from_dto
 from app.llm.application.mapper.ai_message_mapper import AIMessageMapper
 from app.llm.application.model.request.vision import GenerateVisionAIRequestDTO
+from app.llm.application.model.response.generate import AIResponseDTO
 from app.llm.domain.llm_vision_repository import LLMVisionRepository
 from app.llm.domain.model.ai_message import AIMessage
 

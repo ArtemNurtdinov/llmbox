@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 
-from app.application.dto import AIResponseDTO
 from app.bootstrap import get_generate_text_ai_use_case, get_generate_vision_ai_use_case
 from app.llm.application.model.request.generate_text import GenerateAIRequestDTO
 from app.llm.application.model.request.vision import GenerateVisionAIRequestDTO
+from app.llm.application.model.response.generate import AIResponseDTO
 from app.llm.application.usecase.generate_text_ai_use_case import GenerateTextAIUseCase
 from app.llm.application.usecase.generate_vision_ai_use_case import GenerateVisionAIUseCase
 from app.llm.infrastructure.decorators import handle_service_errors
