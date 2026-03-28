@@ -27,8 +27,8 @@ from app.llm.infrastructure.llm_vision_repository import LLMVisionRepositoryImpl
 def load_config() -> Config:
     config_source: ConfigSource = EnvConfigSource()
     config_validator: ConfigValidator = AppConfigValidator()
-    provider: ConfigRepository = ConfigRepositoryImpl(config_source, config_validator)
-    return provider.get_config()
+    repository: ConfigRepository = ConfigRepositoryImpl(config_source, config_validator)
+    return repository.get_config()
 
 
 def build_generate_text_ai_use_case(config: Config) -> GenerateTextAIUseCase:
