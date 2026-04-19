@@ -13,7 +13,6 @@ class GenerateTextAIUseCase:
 
     async def execute(self, request: GenerateAIRequestDTO) -> AIResponseDTO:
         messages, assistant = self._ai_message_mapper.to_domain_messages_from_dto(request)
-
         try:
             ai_message: AIMessage = await self._llm_repository.generate(assistant, messages)
             return self._ai_message_mapper.map_ai_message_to_dto(ai_message)
