@@ -134,7 +134,7 @@ def get_llm_repository() -> LLMRepository:
 def get_generate_text_ai_use_case() -> GenerateTextAIUseCase:
     llm_repository: LLMRepository = get_llm_repository()
 
-    return GenerateTextAIUseCase(llm_repository=llm_repository, ai_message_mapper=AIMessageMapper())
+    return GenerateTextAIUseCase(logger=get_logger(), llm_repository=llm_repository, ai_message_mapper=AIMessageMapper())
 
 
 def get_llm_vision_repository() -> LLMVisionRepository:
@@ -145,4 +145,4 @@ def get_llm_vision_repository() -> LLMVisionRepository:
 
 def get_generate_vision_ai_use_case() -> GenerateVisionAIUseCase:
     llm_vision_repository: LLMVisionRepository = get_llm_vision_repository()
-    return GenerateVisionAIUseCase(llm_vision_repository=llm_vision_repository, ai_message_mapper=AIMessageMapper())
+    return GenerateVisionAIUseCase(logger=get_logger(), llm_vision_repository=llm_vision_repository, ai_message_mapper=AIMessageMapper())
