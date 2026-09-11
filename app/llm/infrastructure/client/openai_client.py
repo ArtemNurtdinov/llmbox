@@ -1,3 +1,4 @@
+import httpx
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionAssistantMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
 
@@ -16,7 +17,8 @@ class OpenAIClient(TextWithVisionClient):
         if not model or not api_key:
             raise ValueError("OpenAI model and api_key are required")
         self._model = model
-        self._client = AsyncOpenAI(api_key=api_key)
+        http_client = httpx.AsyncClient(proxies="socks5://host.docker.internal:10808")
+        self._client = AsyncOpenAI(http_client=http_client, api_key=api_key)
 
     async def generate(self, user_messages: list[Message]) -> AIMessage:
         messages = []
