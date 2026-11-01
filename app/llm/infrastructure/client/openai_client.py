@@ -31,7 +31,7 @@ class OpenAIClient(TextWithVisionClient):
             elif message.role == Role.ASSISTANT:
                 messages.append(ChatCompletionAssistantMessageParam(role=message.role.value, content=message.content))
 
-        completion = await self._client.chat.completions.create(model=self._model, messages=messages)
+        completion = await self._client.chat.completions.create(model=self._model, messages=messages, reasoning_effort="none")
 
         assistant_message = completion.choices[0].message.content
         prompt_tokens = completion.usage.prompt_tokens
@@ -54,7 +54,7 @@ class OpenAIClient(TextWithVisionClient):
     async def generate_vision(self, user_messages: list[TextVisionMessage]) -> AIMessage:
         messages = [self._serialize_message(msg) for msg in user_messages]
 
-        response = await self._client.chat.completions.create(model=self._model, messages=messages)
+        response = await self._client.chat.completions.create(model=self._model, messages=messages, reasoning_effort="none")
 
         usage = Usage(
             prompt_tokens=response.usage.prompt_tokens,
